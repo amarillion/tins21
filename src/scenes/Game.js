@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 import Mushroom from '../sprites/Mushroom.js';
-import { getTriangleTesselation } from '../tesselate.js';
+import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation } from '../tesselate.js';
 
 export default class extends Phaser.Scene {
 	constructor () {
@@ -21,14 +21,16 @@ export default class extends Phaser.Scene {
 		}
 
 		const createPrimitiveUnit = (xco, yco) => {
+			const fill = [ 0xFF00FF, 0x00FFFF, 0xFFFF00, 0x00FF00 ];
+			let i = 0;
 			for (const element of primitiveUnit) {
 				const poly = new Phaser.GameObjects.Polygon(
 					this, 
 					xco + element.x * SCALE, yco + element.y * SCALE, 
 					scaledShape,
-					0xFF0000, 1.0
+					fill[i++], 1.0
 				);
-				poly.isFilled = false;
+				poly.isFilled = true;
 				poly.isStroked = true;
 				poly.setStrokeStyle(2.0, 0x000000, 1.0);
 				poly.rotation = element.rotation;
@@ -67,7 +69,7 @@ export default class extends Phaser.Scene {
 		// 	fill: '#7744ff'
 		// });
 
-		const t = getTriangleTesselation();
+		const t = getCairoTesselation();
 		this.renderTesselation(t);
 
 	}
