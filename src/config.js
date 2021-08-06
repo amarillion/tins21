@@ -6,5 +6,5 @@ export default {
 	backgroundColor: '#dddddd',
 	width: 800,
 	height: 600,
-	localStorageName: 'phaseres6webpack'
+	localStorageName: 'tins21-amarillion'
 };

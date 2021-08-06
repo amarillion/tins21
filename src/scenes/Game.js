@@ -11,6 +11,9 @@ export default class extends Phaser.Scene {
 	preload () {}
 
 	renderTesselation(tesselation) {
+		const SCREENH = 600;
+		const SCREENW = 800;
+
 		const { shape, offset, primitiveUnit } = tesselation;
 
 		const scaledShape = [];
@@ -21,29 +24,37 @@ export default class extends Phaser.Scene {
 		}
 
 		const createPrimitiveUnit = (xco, yco) => {
-			const fill = [ 0xFF00FF, 0x00FFFF, 0xFFFF00, 0x00FF00 ];
 			let i = 0;
 			for (const element of primitiveUnit) {
 				const poly = new Phaser.GameObjects.Polygon(
 					this, 
 					xco + element.x * SCALE, yco + element.y * SCALE, 
 					scaledShape,
-					fill[i++], 1.0
+					0, 1.0
 				);
-				poly.isFilled = true;
+				const rect = poly.getBounds();
+				if (rect.top < 0 || rect.bottom > SCREENH || rect.left < 0 || rect.right > SCREENW) continue;
+
+				poly.isFilled = false;
 				poly.isStroked = true;
-				poly.setStrokeStyle(2.0, 0x000000, 1.0);
+				poly.setStrokeStyle(3.0, 0x808080, 1.0);
 				poly.rotation = element.rotation;
 				this.add.existing(poly);
 			}
 		}
 
-		let xco = 100;
-		let yco = 100;
-		for (let x = 0; x < 5; ++x) {
+		let xco = 0;
+		let yco = 0;
+		let y = 0;
+		while (yco < SCREENH) {
+			y++;
+			if (y % 2) {
+				xco -= offset[2] * SCALE;
+				yco -= offset[3] * SCALE;
+			}
 			let secondX = xco;
 			let secondY = yco;
-			for (let y = 0; y < 5; ++y) {
+			while (secondX < SCREENW) {
 				createPrimitiveUnit(secondX, secondY);
 				secondX += offset[2] * SCALE;
 				secondY += offset[3] * SCALE;
@@ -69,7 +80,7 @@ export default class extends Phaser.Scene {
 		// 	fill: '#7744ff'
 		// });
 
-		const t = getCairoTesselation();
+		const t = getHexagonalTesselation();
 		this.renderTesselation(t);
 
 	}

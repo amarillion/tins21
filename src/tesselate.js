@@ -43,7 +43,7 @@ export function getHexagonalTesselation() {
 	const primitiveUnit = [
 		{ x: 0, y: 0, rotation: 0 }
 	];
-	const offset = [ 2*SIN60, 0, SIN60, 1.5 ];
+	const offset = [ SIN60, 1.5, 2*SIN60, 0 ];
 	return {
 		shape,
 		primitiveUnit,
