@@ -30,14 +30,14 @@ export default class extends Phaser.Scene {
 					this, 
 					xco + element.x * SCALE, yco + element.y * SCALE, 
 					scaledShape,
-					0, 1.0
+					(i++ * 0x200020), 1.0
 				);
 				const rect = poly.getBounds();
-				if (rect.top < 0 || rect.bottom > SCREENH || rect.left < 0 || rect.right > SCREENW) continue;
+				if (rect.bottom < 0 || rect.top > SCREENH || rect.right < 0 || rect.left > SCREENW) continue;
 
 				poly.isFilled = false;
 				poly.isStroked = true;
-				poly.setStrokeStyle(3.0, 0x808080, 1.0);
+				poly.setStrokeStyle(3.0, 0xA0A0A0, 1.0);
 				poly.rotation = element.rotation;
 				this.add.existing(poly);
 			}
@@ -45,21 +45,13 @@ export default class extends Phaser.Scene {
 
 		let xco = 0;
 		let yco = 0;
-		let y = 0;
 		while (yco < SCREENH) {
-			y++;
-			if (y % 2) {
-				xco -= offset[2] * SCALE;
-				yco -= offset[3] * SCALE;
-			}
 			let secondX = xco;
 			let secondY = yco;
 			while (secondX < SCREENW) {
 				createPrimitiveUnit(secondX, secondY);
 				secondX += offset[2] * SCALE;
-				secondY += offset[3] * SCALE;
 			}
-			xco += offset[0] * SCALE;
 			yco += offset[1] * SCALE;
 		}
 
