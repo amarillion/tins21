@@ -2,10 +2,7 @@ import Phaser from 'phaser';
 
 import { TESSELATIONS } from './tesselate.js';
 import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
-
-const SCREENH = 600;
-const SCREENW = 800;
-const SCALE = 64;
+import { SCALE } from './config.js';
 
 export const TILES = {};
 export function initTiles(scene) {

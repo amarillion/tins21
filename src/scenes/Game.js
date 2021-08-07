@@ -8,10 +8,7 @@ import { breadthFirstSearch } from '@amarillion/helixgraph';
 import Mushroom from '../sprites/Mushroom.js';
 import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
 import { TILES, initTiles } from '../tiles.js';
-
-const SCREENH = 600;
-const SCREENW = 800;
-const SCALE = 64;
+import { SCALE, SCREENH, SCREENW } from '../config.js';
 
 function initGrid(tesselation) {
 	const { unitSize, links } = tesselation;
