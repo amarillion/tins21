@@ -202,57 +202,50 @@ function getCairoTesselation() {
 
 	const unitSize = [ 4*SIN60, 4*SIN60 ];
 	const links = [
-		[ 
+		[ // 0
 			{ dx: 0, dy: -1, idx: 5 },
 			{ dx: 0, dy: 0, idx: 3 },
 			{ dx: 0, dy: 0, idx: 2 },
 			{ dx: 0, dy: 0, idx: 1 },
 			{ dx: -1, dy: -1, idx: 7 },
-		],
-		[ 
+		], [ // 1 
 			{ dx: 0, dy: 0, idx: 2 },
 			{ dx: -1, dy: 0, idx: 4 },
 			{ dx: -1, dy: 0, idx: 3 },
 			{ dx: -1, dy: -1, idx: 6 },
 			{ dx: 0, dy: 0, idx: 0 },
-		],
-		[
+		], [ // 2
 			{ dx: -1, dy: 0, idx: 7 },
 			{ dx: 0, dy: 0, idx: 1 },
 			{ dx: 0, dy: 0, idx: 0 },
 			{ dx: 0, dy: 0, idx: 3 },
 			{ dx: 0, dy: 0, idx: 5 },
-		],
-		[
+		], [ // 3
 			{ dx: 0, dy: 0, idx: 0 },
 			{ dx: 0, dy: -1, idx: 6 },
 			{ dx: 1, dy: 0, idx: 1 },
 			{ dx: 0, dy: 0, idx: 4 },
 			{ dx: 0, dy: 0, idx: 2 },
-		],
-		[
+		], [ // 4
 			{ dx: 1, dy: 0, idx: 1 },
 			{ dx: 0, dy: 0, idx: 7 },
 			{ dx: 0, dy: 0, idx: 6 },
 			{ dx: 0, dy: 0, idx: 5 },
 			{ dx: 0, dy: 0, idx: 3 },
-		],
-		[
+		], [ // 5
 			{ dx: 0, dy: 0, idx: 6 },
 			{ dx: 0, dy: 1, idx: 0 },
 			{ dx: -1, dy: 0, idx: 7 },
 			{ dx: 0, dy: 0, idx: 2 },
 			{ dx: 0, dy: 0, idx: 4 },
-		],
-		[
+		], [ // 6
 			{ dx: 0, dy: 1, idx: 3 },
 			{ dx: 0, dy: 0, idx: 5 },
 			{ dx: 0, dy: 0, idx: 4 },
 			{ dx: 0, dy: 0, idx: 7 },
 			{ dx: 1, dy: 1, idx: 1 },
 		],
-		[ 
-			{ dx: 0, dy: 0, idx: 7 },
+		[ // 7
 			{ dx: 0, dy: 0, idx: 4 },
 			{ dx: 1, dy: 0, idx: 2 },
 			{ dx: 1, dy: 0, idx: 5 },

@@ -1,7 +1,7 @@
 {
 	"name": "tins21-entry",
 	"version": "0.0.1",
-	"description": "Entry for the TINS 2021 Game Jam, by Amarillion & Team",
+	"description": "Entry for the TINS 2021 Game Jam, by Amarillion, OliviaGS and Donall",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
