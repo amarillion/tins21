@@ -2,6 +2,8 @@ import { Grid, Node } from '../grid.js';
 import Phaser from 'phaser';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import { assert } from '@amarillion/helixgraph/lib/assert.js';
+import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
+import { breadthFirstSearch } from '@amarillion/helixgraph';
 
 import Mushroom from '../sprites/Mushroom.js';
 import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
@@ -89,6 +91,10 @@ export default class extends Phaser.Scene {
 	
 	}
 
+	endReached() {
+		console.log("Gained a point!");
+	}
+
 	createTilesPreview() {
 		const startx = 64, starty = 64;
 		let xco = startx;
@@ -144,6 +150,15 @@ export default class extends Phaser.Scene {
 		node.tile = tile
 		node.tileImg = this.add.image(node.xco, node.yco, node.tile.resKey);
 		node.tileImg.rotation = node.element.rotation;
+		this.checkPath();
+	}
+
+	checkPath() {
+		const prev = breadthFirstSearch(this.startNode, this.endNode, Node.getAdjacent);
+		this.solution = trackbackNodes(this.startNode, this.endNode, prev);
+		if (this.solution) {
+			console.log(this.solution);
+		}
 	}
 
 	create () {

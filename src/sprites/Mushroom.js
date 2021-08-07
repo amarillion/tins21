@@ -13,6 +13,7 @@ export default class extends Phaser.GameObjects.Sprite {
 		this.stepsRemain = 0;
 		this.scale = 0.3;
 		this.prevNode = null;
+		this.solution = scene.solution && scene.solution.slice(1);
 	}
 
 	preUpdate(time, delta) {
@@ -20,10 +21,15 @@ export default class extends Phaser.GameObjects.Sprite {
 
 		if (!this.nextNode) {
 			this.stepsRemain = STEPS;
-			
 			const links = Node.getAdjacent(this.node).map(v => v[1]).filter(n => n !== this.prevNode);
 			assert(links.length > 0);
-			this.nextNode = pickOne(links);
+
+			if (this.solution && links.indexOf(this.solution[0]) >= 0) {
+				this.nextNode = this.solution.shift();
+			}
+			else {
+				this.nextNode = pickOne(links);
+			}
 		}
 
 		const deltax = this.nextNode.cx - this.node.cx;
@@ -37,6 +43,10 @@ export default class extends Phaser.GameObjects.Sprite {
 			this.prevNode = this.node;
 			this.node = this.nextNode;
 			this.nextNode = null;
+			if (this.node === this.scene.endNode) {
+				this.scene.endReached();
+				this.destroy();
+			}
 			if (!this.node.tile) {
 				this.destroy();
 			}
