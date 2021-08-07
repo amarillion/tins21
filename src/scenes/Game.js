@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 
 import Mushroom from '../sprites/Mushroom.js';
 import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
+import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
 
 const SCREENH = 600;
 const SCREENW = 800;
@@ -34,6 +35,70 @@ function initGrid(tesselation) {
 	grid.initLinks(links);
 
 	return grid;
+}
+
+function createTile(scene, tesselation, connectionMask) {
+	const resKey = `tile-${tesselation.name}-${connectionMask}`
+	const graphics = scene.make.graphics({ x: 0, y: 0, add: false });
+	const w = 4 * SCALE;
+	const h = 4 * SCALE;
+	renderTile(scene, graphics, w / 2, h / 2, tesselation, connectionMask);
+	graphics.generateTexture(resKey, w, h);
+	return resKey;
+}
+
+function renderTile(scene, graphics, ox, oy, tesselation, connectionMask) {
+	const { points, sides, pathLen, links, primitiveUnit, unitSize } = tesselation;
+	let ccx = points.reduce((prev, cur) => prev + cur.x, 0) / points.length;
+	let ccy = points.reduce((prev, cur) => prev + cur.y, 0) / points.length;
+	
+	const matrix = transform(
+		translate(ox, oy),
+		scale(SCALE, SCALE),
+	);
+	const tPoints = applyToPoints(matrix, points);
+	const polygon = new Phaser.Geom.Polygon(tPoints);
+
+	graphics.fillStyle(0x44aa44);
+	graphics.fillPoints(polygon.points, true);
+
+	// draw paths
+	const primary = links[0];
+	for (const { dx, dy, idx } of primary) {
+		graphics.lineStyle(8.0, 0xCCCC88);
+		console.log({ dx, dy, idx, primitiveUnit });
+		const targetUnit = primitiveUnit[idx];
+		const xx = dx * unitSize[0] + targetUnit.x;
+		const yy = dy * unitSize[1] + targetUnit.y;
+
+		const matrix2 = transform(
+			translate(ox, oy),
+			scale(SCALE, SCALE),
+			translate(xx, yy),
+			rotate(targetUnit.rotation)
+		);
+		const src = applyToPoint(matrix, { x: ccx, y: ccy });
+		const target = applyToPoint(matrix2, { x: ccx, y: ccy });	
+		graphics.lineBetween(src.x, src.y, (target.x + src.x) / 2, (target.y + src.y) / 2);
+		// const dx = Math.cos(Math.PI * 2 * i / sides);
+		// const dy = Math.sin(Math.PI * 2 * i / sides);
+		// graphics.lineBetween(cx, cy, cx + dx * pathLen * SCALE, cy + dy * pathLen * SCALE);
+	}
+
+	graphics.lineStyle(3.0, 0x338833);
+	graphics.strokePoints(polygon.points, true);
+
+	/*
+	const shape = scene.make.graphics({ add: false });
+	//  Create a hash shape Graphics object
+	shape.fillStyle(0xffffff);
+	//  You have to begin a path for a Geometry mask to work
+	graphics.fillPoints(polygon.points, true);
+	const mask = shape.createGeometryMask();
+	graphics.setMask(mask);
+	*/
+
+
 }
 
 export default class extends Phaser.Scene {
@@ -94,7 +159,7 @@ export default class extends Phaser.Scene {
 		// 	fill: '#7744ff'
 		// });
 
-		const tesselation = TESSELATIONS.HEXAGONAL;
+		/*
 		this.grid = initGrid(tesselation);
 		this.renderPolygons(this.grid);
 
@@ -116,6 +181,28 @@ export default class extends Phaser.Scene {
 				}
 			}
 		});
+		*/
 
+		
+	
+		// make tile variants
+
+		const startx = 64, starty = 64;
+		let xco = startx;
+		let yco = starty;
+		
+		for (const tesselation of Object.values(TESSELATIONS)) {
+
+			for (let i = 0; i < 1; ++i) {
+				const imgKey = createTile(this, tesselation, i);
+				console.log(imgKey);
+				const image = this.add.image(xco, yco, imgKey);
+				xco += 128;
+				if (xco > SCREENW) {
+					yco += 128;
+					xco = startx;
+				}
+			}
+		}
 	}
 }
