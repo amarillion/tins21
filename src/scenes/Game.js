@@ -52,11 +52,11 @@ function renderTile(scene, graphics, ox, oy, tesselation, connectionMask) {
 	let ccx = points.reduce((prev, cur) => prev + cur.x, 0) / points.length;
 	let ccy = points.reduce((prev, cur) => prev + cur.y, 0) / points.length;
 	
-	const matrix = transform(
+	const srcMatrix = transform(
 		translate(ox, oy),
 		scale(SCALE, SCALE),
 	);
-	const tPoints = applyToPoints(matrix, points);
+	const tPoints = applyToPoints(srcMatrix, points);
 	const polygon = new Phaser.Geom.Polygon(tPoints);
 
 	graphics.fillStyle(0x44aa44);
@@ -64,21 +64,24 @@ function renderTile(scene, graphics, ox, oy, tesselation, connectionMask) {
 
 	// draw paths
 	const primary = links[0];
+	let connectionBit = 1;
 	for (const { dx, dy, idx } of primary) {
-		graphics.lineStyle(8.0, 0xCCCC88);
-		console.log({ dx, dy, idx, primitiveUnit });
-		const targetUnit = primitiveUnit[idx];
-		const xx = dx * unitSize[0] + targetUnit.x;
-		const yy = dy * unitSize[1] + targetUnit.y;
+		if ((connectionMask & connectionBit) === 0) continue;
+		connectionBit *= 2;
 
-		const matrix2 = transform(
+		graphics.lineStyle(8.0, 0xCCCC88);
+		const destUnit = primitiveUnit[idx];
+		const xx = dx * unitSize[0] + destUnit.x;
+		const yy = dy * unitSize[1] + destUnit.y;
+
+		const destMatrix = transform(
 			translate(ox, oy),
 			scale(SCALE, SCALE),
 			translate(xx, yy),
-			rotate(targetUnit.rotation)
+			rotate(destUnit.rotation)
 		);
-		const src = applyToPoint(matrix, { x: ccx, y: ccy });
-		const target = applyToPoint(matrix2, { x: ccx, y: ccy });	
+		const src = applyToPoint(srcMatrix, { x: ccx, y: ccy });
+		const target = applyToPoint(destMatrix, { x: ccx, y: ccy });	
 		graphics.lineBetween(src.x, src.y, (target.x + src.x) / 2, (target.y + src.y) / 2);
 		// const dx = Math.cos(Math.PI * 2 * i / sides);
 		// const dy = Math.sin(Math.PI * 2 * i / sides);
@@ -191,9 +194,9 @@ export default class extends Phaser.Scene {
 		let xco = startx;
 		let yco = starty;
 		
-		for (const tesselation of Object.values(TESSELATIONS)) {
+		for (const tesselation of [ TESSELATIONS.TRIANGULAR, TESSELATIONS.DIAMOND ]) {
 
-			for (let i = 0; i < 1; ++i) {
+			for (let i = 0; i < Math.pow(2, tesselation.sides); ++i) {
 				const imgKey = createTile(this, tesselation, i);
 				console.log(imgKey);
 				const image = this.add.image(xco, yco, imgKey);
