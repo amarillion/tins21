@@ -8,7 +8,7 @@ import { breadthFirstSearch } from '@amarillion/helixgraph';
 import Mushroom from '../sprites/Mushroom.js';
 import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
 import { TILES, initTiles } from '../tiles.js';
-import { SCALE, SCREENH, SCREENW } from '../config.js';
+import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../config.js';
 
 function initGrid(tesselation) {
 	const { unitSize, links } = tesselation;
@@ -88,8 +88,41 @@ export default class extends Phaser.Scene {
 	
 	}
 
+	initLevel() {
+		this.add.displayList.removeAll();
+
+		this.score = 0;
+
+		const tesselList = Object.values(TESSELATIONS);
+		const tesselation = tesselList[this.level % tesselList.length];
+
+		this.grid = initGrid(tesselation);
+		this.renderPolygons(this.grid);
+
+		const tileSet = TILES[tesselation.name];
+
+		this.noDeadEnds = tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
+
+		this.startNode = this.findNodeAt(150, 150);
+		this.setTile(this.startNode, tileSet[tileSet.length - 1]);
+		this.add.circle(150, 150, 10, 0xFF0000, 1.0);
+
+		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
+		this.setTile(this.endNode, tileSet[tileSet.length - 1]);
+		this.add.circle(SCREENW - 150, SCREENH - 150, 10, 0x00FF00, 1.0);
+
+		assert(this.startNode);
+		assert(this.endNode);
+
+	}
+
 	endReached() {
-		console.log("Gained a point!");
+		this.score++;
+		if (this.score > MAX_SCORE) {
+			alert("You won this level!");
+			this.level++;
+			this.initLevel();
+		}
 	}
 
 	createTilesPreview() {
@@ -160,42 +193,20 @@ export default class extends Phaser.Scene {
 
 	create () {
 		// make tile variants
+		this.level = 0;
 		initTiles(this);
 
 		this.time.addEvent({ delay: 1000, callback: () => this.addMonster(), loop: true });
 	
-		// this.add.text(100, 100, 'Phaser 3 - ES6 - Webpack ', {
-		// 	font: '64px Bangers',
-		// 	fill: '#7744ff'
-		// });
-
-		const tesselation = TESSELATIONS.DIAMOND;
-		this.grid = initGrid(tesselation);
-		this.renderPolygons(this.grid);
-
-		const tileSet = TILES[tesselation.name];
-
-		const noDeadEnds = tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
-
+		this.initLevel();
+		
 		this.input.on('pointerdown', (pointer) => {
 			const node = this.findNodeAt(pointer.x, pointer.y);
 			if (node) {
-				const tile = pickOne(noDeadEnds); 
+				const tile = pickOne(this.noDeadEnds); 
 				this.setTile(node, tile);
 				// this.debugAdjacent(node);
 			}
 		});
-
-
-		this.startNode = this.findNodeAt(150, 150);
-		this.setTile(this.startNode, tileSet[tileSet.length - 1]);
-		this.add.circle(150, 150, 10, 0xFF0000, 1.0);
-
-		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
-		this.setTile(this.endNode, tileSet[tileSet.length - 1]);
-		this.add.circle(SCREENW - 150, SCREENH - 150, 10, 0x00FF00, 1.0);
-
-		assert(this.startNode);
-		assert(this.endNode);
 	}
 }
