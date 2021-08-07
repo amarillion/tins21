@@ -20,17 +20,27 @@ const config = {
 			template: "./src/index.html",
 			filename: "index.html", //relative to root of the application
 		}),
-		new CopyWebpackPlugin({ patterns: [
-			{ from: "assets", to: "assets" },
-		]}),
+		new CopyWebpackPlugin({
+			patterns: [
+				{ from: "assets", to: "assets" },
+			]
+		}),
 	],
 	module: {
 		rules: [
 			{
 				test: /\.(gif|png|jpe?g|svg|xml|ogg)$/i,
 				use: "file-loader"
-			}
-		]
+			},
+			{
+				test: /\.ts$/,
+				use: 'ts-loader',
+				exclude: /node_modules/,
+			},
+		],
+	},
+	resolve: {
+		extensions: ['.ts', '.js'],
 	},
 	optimization: {
 		splitChunks: {

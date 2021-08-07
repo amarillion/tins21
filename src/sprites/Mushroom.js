@@ -1,7 +1,7 @@
 import { assert } from '@amarillion/helixgraph/lib/assert.js';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import Phaser from 'phaser';
-import { Node } from '../grid.js';
+import { Node } from '../grid.ts';
 
 const STEPS = 40;
 

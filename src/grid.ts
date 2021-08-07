@@ -1,7 +1,19 @@
-import BaseGrid from '@amarillion/helixgraph/lib/BaseGrid.js';
+import { TemplateGrid } from '@amarillion/helixgraph/lib/BaseGrid.js';
 import {scale, rotate, translate, transform, applyToPoints } from 'transformation-matrix';
 
 export class Node {
+	mx: number;
+	my: number;
+	idx: number;
+	unitXco: number;
+	unitYco: number;
+	xco: number;
+	yco: number;
+	points: any[];
+	cx: number;
+	cy: number;
+	element: object;
+	links: any[];
 
 	constructor(mx, my, idx, xco, yco, element, points, SCALE) {
 		this.mx = mx;
@@ -50,6 +62,14 @@ export class Node {
 
 /** Unit combines all shapes in a primitive unit */
 export class Unit {
+	x: number;
+	y: number;
+	grid: any;
+	nodes: any[];
+	xco: number;
+	yco: number;
+	unitSize: any;
+
 	constructor(x, y, grid) {
 		this.x = x;
 		this.y = y;
@@ -82,7 +102,7 @@ export class Unit {
 
 }
 
-export class Grid extends BaseGrid {
+export class Grid extends TemplateGrid<Unit> {
 	
 	constructor(w, h) {
 		super(w, h, (x, y, grid) => new Unit(x, y, grid));

@@ -1,4 +1,4 @@
-import { Grid, Node } from '../grid.js';
+import { Grid, Node } from '../grid.ts';
 import Phaser from 'phaser';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import { assert } from '@amarillion/helixgraph/lib/assert.js';
