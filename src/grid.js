@@ -7,8 +7,10 @@ export class Node {
 		this.mx = mx;
 		this.my = my;
 		this.idx = idx;
-		this.xco = xco;
-		this.yco = yco;
+		this.unitXco = xco;
+		this.unitYco = yco;
+		this.xco = xco + element.x * SCALE;
+		this.yco = yco + element.y * SCALE;
 		const matrix = transform(
 			translate(xco, yco),
 			scale(SCALE, SCALE),
@@ -84,7 +86,7 @@ export class Grid extends BaseGrid {
 					if (!targetUnit) continue;
 					const targetNode = targetUnit.nodes[idx];
 					node.links.push(targetNode);
-					console.log(`linked ${node} to ${targetNode}`);
+					// console.log(`linked ${node} to ${targetNode}`);
 				}
 			}
 		}
