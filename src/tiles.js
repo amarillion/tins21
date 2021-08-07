@@ -15,7 +15,7 @@ export function initTiles(scene) {
 }
 
 function createTile(scene, tesselation, connectionMask) {
-	const resKey = `tile-${tesselation.name}-${connectionMask}`
+	const resKey = `tile-${tesselation.name}-${connectionMask}`;
 	const graphics = scene.make.graphics({ x: 0, y: 0, add: false });
 	const w = 4 * SCALE;
 	const h = 4 * SCALE;
@@ -25,7 +25,7 @@ function createTile(scene, tesselation, connectionMask) {
 	TILES[tesselation.name][connectionMask] = {
 		resKey,
 		connectionMask
-	}
+	};
 }
 
 function renderTile(graphics, ox, oy, tesselation, connectionMask, fillColor, outlineColor, pathColor) {

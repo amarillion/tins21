@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 /*
 	Adds an event listener on a DOM element, and returns a function that
 	removes it again when called.
@@ -17,12 +19,12 @@ export class MenuScene extends Phaser.Scene {
 
 	async create() {
 		document.querySelector('div#wrapper').style = 'display: none;';
-		document.querySelector("game-menu").style = 'display: visible;';
+		document.querySelector('game-menu').style = 'display: visible;';
 
 		this.component = document.querySelector('game-menu');
 		// this.component.style.display = 'visible';
 		this.unregister = [
-			registerEventListener(this.component, "Start", () => this.startGame()),
+			registerEventListener(this.component, 'Start', () => this.startGame()),
 			// registerEventListener(this.component, "button-pressed", () => this.menuOkSound.play()),
 		];
 		this.events.on('shutdown', () => this.shutdown());
@@ -34,7 +36,7 @@ export class MenuScene extends Phaser.Scene {
 
 	shutdown() {
 		this.unregister.forEach(f => f());
-		document.querySelector("game-menu").style = 'display: none;';
+		document.querySelector('game-menu').style = 'display: none;';
 		document.querySelector('div#wrapper').style = 'display: visible;';
 	}
 }

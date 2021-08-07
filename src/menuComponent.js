@@ -1,4 +1,4 @@
-import menuBg from "../assets/images/menu.png";
+import menuBg from '../assets/images/menu.png';
 
 export class MenuComponent extends HTMLElement {
 
@@ -54,9 +54,9 @@ export class MenuComponent extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.shadowRoot.querySelector("#startGame").addEventListener("click", (event) => {
-			this.dispatchEvent(new CustomEvent("Start"));
-			this.dispatchEvent(new CustomEvent("button-pressed"));
+		this.shadowRoot.querySelector('#startGame').addEventListener('click', () => {
+			this.dispatchEvent(new CustomEvent('Start'));
+			this.dispatchEvent(new CustomEvent('button-pressed'));
 		});
 	}
 

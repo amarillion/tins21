@@ -6,7 +6,7 @@ import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
 import { breadthFirstSearch } from '@amarillion/helixgraph';
 
 import Mushroom from '../sprites/Mushroom.js';
-import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
+import { TESSELATIONS } from '../tesselate.js';
 import { TILES, initTiles } from '../tiles.js';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../config.js';
 
@@ -26,7 +26,7 @@ function initGrid(tesselation) {
 		let secondY = yco;
 		for (let mx = 0; mx < mw; ++mx) {
 			const unit = grid.get(mx, my);
-			unit.addPrimitiveUnit(mx, my, secondX, secondY, tesselation, SCALE)
+			unit.addPrimitiveUnit(mx, my, secondX, secondY, tesselation, SCALE);
 			secondX += unitSize[0] * SCALE;
 		}
 		yco += unitSize[1] * SCALE;
@@ -54,7 +54,7 @@ export default class extends Phaser.Scene {
 		rect.setStrokeStyle(3.0, 0xAA8888, 1.0);
 		this.add.existing(rect);
 		rect.setOrigin(0,0);
-		console.log({ xco: unit.xco, yco: unit.yco, w: unit.unitSize[0], h: unit.unitSize[1], rect })
+		console.log({ xco: unit.xco, yco: unit.yco, w: unit.unitSize[0], h: unit.unitSize[1], rect });
 	}
 
 	renderPolygons(grid) {
@@ -119,7 +119,7 @@ export default class extends Phaser.Scene {
 	endReached() {
 		this.score++;
 		if (this.score > MAX_SCORE) {
-			alert("You won this level!");
+			alert('You won this level!');
 			this.level++;
 			this.initLevel();
 		}
@@ -144,7 +144,7 @@ export default class extends Phaser.Scene {
 
 	debugAdjacent(node) {
 		node.delegate.isFilled = true;
-		const adjacentList = Node.getAdjacent(node)
+		const adjacentList = Node.getAdjacent(node);
 		for (let i = 0; i < adjacentList.length; ++i) {
 			const adjacent = adjacentList[i][1];
 			setTimeout(() => adjacent.delegate.isFilled = true, (i+2) * 200);
@@ -177,7 +177,7 @@ export default class extends Phaser.Scene {
 	}
 
 	setTile(node, tile) {
-		node.tile = tile
+		node.tile = tile;
 		node.tileImg = this.add.image(node.xco, node.yco, node.tile.resKey);
 		node.tileImg.rotation = node.element.rotation;
 		this.checkPath();

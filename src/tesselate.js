@@ -13,7 +13,7 @@ function getTriangleTesselation() {
 		{ x: -1, y: 2*SIN60, rotation: 0 },
 		{ x: 2,  y: 4*SIN60, rotation: PI }
 	];
-	const unitSize = [ 2, 4 * SIN60 ]
+	const unitSize = [ 2, 4 * SIN60 ];
 	const links = [
 		[
 			{ dx: 0, dy: -1, idx: 3 },
@@ -32,7 +32,7 @@ function getTriangleTesselation() {
 			{ dx: 0, dy: 0, idx: 2 },
 			{ dx: 1, dy: 0, idx: 2 },
 		]
-	]
+	];
 	return {
 		points,
 		primitiveUnit,
@@ -40,7 +40,7 @@ function getTriangleTesselation() {
 		links,
 		name: 'TRIANGULAR',
 		sides: 3,
-	}
+	};
 }
 
 function getSquareTesselation() {
@@ -53,7 +53,7 @@ function getSquareTesselation() {
 	const primitiveUnit = [
 		{ x: 0, y: 0, rotation: 0 }
 	];
-	const unitSize = [ 1.5, 1.5 ]
+	const unitSize = [ 1.5, 1.5 ];
 	const links = [
 		// first elt
 		[
@@ -62,7 +62,7 @@ function getSquareTesselation() {
 			{ dx: 0, dy:  1, idx: 0 }, // south
 			{ dx: -1,dy:  0, idx: 0 }, // west
 		]
-	]
+	];
 	return {
 		points,
 		primitiveUnit,
@@ -70,7 +70,7 @@ function getSquareTesselation() {
 		links,
 		name: 'SQUARE',
 		sides: 4,
-	}
+	};
 }
 
 function getHexagonalTesselation() {	
@@ -106,7 +106,7 @@ function getHexagonalTesselation() {
 			{ dx: -1, dy: 0, idx: 1 }, // W
 			{ dx: -1, dy: 0, idx: 0 }, // NW
 		]
-	]
+	];
 	return {
 		points,
 		primitiveUnit,
@@ -114,7 +114,7 @@ function getHexagonalTesselation() {
 		links,
 		name: 'HEXAGONAL',
 		sides: 6,
-	}
+	};
 }
 
 function getDiamondTesselation() {
@@ -174,7 +174,7 @@ function getDiamondTesselation() {
 		links,
 		name: 'DIAMOND',
 		sides: 4,
-	}
+	};
 }
 
 function getCairoTesselation() {
@@ -260,7 +260,7 @@ function getCairoTesselation() {
 		links,
 		name: 'CAIRO',
 		sides: 5,
-	}
+	};
 }
 
 export const TESSELATIONS = {
@@ -269,4 +269,4 @@ export const TESSELATIONS = {
 	SQUARE: getSquareTesselation(),
 	HEXAGONAL: getHexagonalTesselation(),
 	TRIANGULAR: getTriangleTesselation()
-}
+};

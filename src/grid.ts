@@ -12,7 +12,7 @@ export class Node {
 	points: any[];
 	cx: number;
 	cy: number;
-	element: object;
+	element: any;
 	links: any[];
 
 	constructor(mx, my, idx, xco, yco, element, points, SCALE) {
@@ -37,7 +37,7 @@ export class Node {
 	}
 
 	toString() {
-		return `unit [${this.mx} ${this.my}] index: ${this.idx}`
+		return `unit [${this.mx} ${this.my}] index: ${this.idx}`;
 	}
 
 	static getLinks(node) {
