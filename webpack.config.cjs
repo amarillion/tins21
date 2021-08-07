@@ -24,6 +24,14 @@ const config = {
 			{ from: "assets", to: "assets" },
 		]}),
 	],
+	module: {
+		rules: [
+			{
+				test: /\.(gif|png|jpe?g|svg|xml|ogg)$/i,
+				use: "file-loader"
+			}
+		]
+	},
 	optimization: {
 		splitChunks: {
 			chunks: 'all'
