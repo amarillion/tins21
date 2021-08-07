@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@amarillion/helixgraph": "0.5.1",
-		"phaser": "3.55.2"
+		"phaser": "3.55.2",
+		"transformation-matrix": "^2.8.0"
 	}
 }
