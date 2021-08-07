@@ -8,8 +8,17 @@ export const SCALE = 64;
 export default {
 	type: Phaser.AUTO,
 	parent: 'content',
+	disableContextMenu: true,
 	backgroundColor: '#dddddd',
 	width: SCREENW,
 	height: SCREENH,
-	localStorageName: 'tins21-amarillion'
+	localStorageName: 'tins21-amarillion',
+	fps: {
+		target: 60
+	},
+	scale: {
+		mode: Phaser.Scale.FIT,
+		autoCenter: Phaser.Scale.CENTER_BOTH,
+		parent: 'content'
+	}
 };
