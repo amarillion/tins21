@@ -1,6 +1,7 @@
 import { Grid, Node } from '../grid.js';
 import Phaser from 'phaser';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
+import { assert } from '@amarillion/helixgraph/lib/assert.js';
 
 import Mushroom from '../sprites/Mushroom.js';
 import { getCairoTesselation, getDiamondTesselation, getHexagonalTesselation, getSquareTesselation, getTriangleTesselation, TESSELATIONS } from '../tesselate.js';
@@ -110,47 +111,79 @@ export default class extends Phaser.Scene {
 		const adjacentList = Node.getAdjacent(node)
 		for (let i = 0; i < adjacentList.length; ++i) {
 			const adjacent = adjacentList[i][1];
-			setTimeout(() => adjacent.delegate.isFilled = true, (i+1) * 100);
-			setTimeout(() => adjacent.delegate.isFilled = false, (i+2) * 100);
+			setTimeout(() => adjacent.delegate.isFilled = true, (i+2) * 200);
+			setTimeout(() => adjacent.delegate.isFilled = false, (i+3) * 200);
 		}
 		setTimeout(() => node.delegate.isFilled = false, 100);
 		console.log(`{ dx: ${node.mx - 1}, dy: ${node.my - 1}, idx: ${node.idx} },`);
+	}
+
+	addMonster() {
+		this.mushroom = new Mushroom({
+			scene: this,
+			node: this.startNode,
+			asset: 'mushroom'
+		});
+		this.add.existing(this.mushroom);
+	}
+
+	findNodeAt(xco, yco) {
+		// TODO: check bounding box of unit as speed optimization...
+		for (const unit of this.grid.eachNode()) {
+			for (const node of unit.nodes) {
+				if (!node.delegate) continue; // outside screen is undefined
+				if (Phaser.Geom.Polygon.Contains(node.delegate.geom, xco, yco)) {
+					return node;
+				}
+			}
+		}
+		return null;
+	}
+
+	setTile(node, tile) {
+		node.tile = tile
+		node.tileImg = this.add.image(node.xco, node.yco, node.tile.resKey);
+		node.tileImg.rotation = node.element.rotation;
 	}
 
 	create () {
 		// make tile variants
 		initTiles(this);
 
-		// this.mushroom = new Mushroom({
-		// 	scene: this,
-		// 	x: 400,
-		// 	y: 300,
-		// 	asset: 'mushroom'
-		// });
-
-		// this.add.existing(this.mushroom);
+		this.time.addEvent({ delay: 1000, callback: () => this.addMonster(), loop: true });
+	
 		// this.add.text(100, 100, 'Phaser 3 - ES6 - Webpack ', {
 		// 	font: '64px Bangers',
 		// 	fill: '#7744ff'
 		// });
 
-		const tesselation = TESSELATIONS.CAIRO;
+		const tesselation = TESSELATIONS.DIAMOND;
 		this.grid = initGrid(tesselation);
 		this.renderPolygons(this.grid);
 
+		const tileSet = TILES[tesselation.name];
+
+		const noDeadEnds = tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
+
 		this.input.on('pointerdown', (pointer) => {
-			for (const unit of this.grid.eachNode()) {
-				for (const node of unit.nodes) {
-					if (!node.delegate) continue; // outside screen is undefined
-					if (Phaser.Geom.Polygon.Contains(node.delegate.geom, pointer.x, pointer.y)) {
-						// this.debugAdjacent(node);
-						const resKey = pickOne(TILES[tesselation.name]);
-						const tile = this.add.image(node.xco, node.yco, resKey);
-						tile.rotation = node.element.rotation;
-					}
-				}
+			const node = this.findNodeAt(pointer.x, pointer.y);
+			if (node) {
+				const tile = pickOne(noDeadEnds); 
+				this.setTile(node, tile);
+				// this.debugAdjacent(node);
 			}
 		});
 
+
+		this.startNode = this.findNodeAt(150, 150);
+		this.setTile(this.startNode, tileSet[tileSet.length - 1]);
+		this.add.circle(150, 150, 10, 0xFF0000, 1.0);
+
+		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
+		this.setTile(this.endNode, tileSet[tileSet.length - 1]);
+		this.add.circle(SCREENW - 150, SCREENH - 150, 10, 0x00FF00, 1.0);
+
+		assert(this.startNode);
+		assert(this.endNode);
 	}
 }

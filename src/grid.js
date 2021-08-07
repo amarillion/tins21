@@ -18,6 +18,8 @@ export class Node {
 			rotate(element.rotation),
 		);
 		this.points = applyToPoints(matrix, points);
+		this.cx = this.points.reduce((prev, cur) => prev + cur.x, 0) / this.points.length;
+		this.cy = this.points.reduce((prev, cur) => prev + cur.y, 0) / this.points.length;
 		this.element = element;
 		this.links = [];
 	}
@@ -26,8 +28,22 @@ export class Node {
 		return `unit [${this.mx} ${this.my}] index: ${this.idx}`
 	}
 
-	static getAdjacent(node) {
+	static getLinks(node) {
 		return Object.entries(node.links);
+	}
+
+	static getAdjacent(node) {
+		const connectionMask = node.tile && node.tile.connectionMask || 0;
+		const links = Node.getLinks(node);
+		let result = [];
+		let bit = 1;
+		for (let i = 0; i < links.length; ++i) {
+			if ((connectionMask & bit) > 0) {
+				result.push(links[i]);
+			}
+			bit *= 2;
+		}
+		return result;
 	}
 
 }
