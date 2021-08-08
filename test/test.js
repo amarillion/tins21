@@ -1,10 +1,9 @@
 #!/usr/bin/node
 
-import { applyToPoints, rotate, scale, transform, translate } from "transformation-matrix";
-import { TESSELATIONS } from "../src/tesselate.js"
+import { applyToPoints, rotate, scale, transform, translate } from 'transformation-matrix';
+import { TESSELATIONS } from '../src/tesselate.js';
 
-// import { SCALE } from "../src/config.js";
-const SCALE = 64;
+import { SCALE } from '../src/constants.js';
 
 test('matrix tranformation', () => {
 	
@@ -17,7 +16,7 @@ test('matrix tranformation', () => {
 		x: 0,
 		y: 0,
 		rotation: Math.PI * 2 / 3 // 120 degrees
-	}
+	};
 	
 	const matrix = transform(
 		translate(xco, yco),

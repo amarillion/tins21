@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 import { TESSELATIONS } from './tesselate.js';
 import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
-import { SCALE } from './config.js';
+import { SCALE } from './constants.js';
 
 export type Tile = {
 	resKey: string,

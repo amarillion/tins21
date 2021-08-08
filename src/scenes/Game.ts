@@ -8,7 +8,8 @@ import { breadthFirstSearch } from '@amarillion/helixgraph';
 import Mushroom from '../sprites/Mushroom.js';
 import { TESSELATIONS } from '../tesselate.js';
 import { TILES, initTiles, Tile } from '../tiles';
-import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../config.js';
+import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
+import { ProgressBar } from '../sprites/progress-bar';
 
 function initGrid(tesselation) {
 	const { unitSize, links } = tesselation;
@@ -104,6 +105,7 @@ export default class extends Phaser.Scene {
 	endNode: Node;
 	control: Phaser.GameObjects.GameObject;
 	solution: Node[];
+	progressbar: ProgressBar;
 
 	initGates() {
 		this.startNode = this.findNodeAt(150, 150);
@@ -115,6 +117,24 @@ export default class extends Phaser.Scene {
 		this.setTile(this.endNode, this.tileSet[this.tileSet.length - 1]);
 		const c2 = new Phaser.GameObjects.Ellipse(this, this.endNode.cx, this.endNode.cy, 10, 10, 0x00FF00, 1.0);
 		this.spriteLayer.add(c2);
+	}
+
+	initUI() {
+		const CONTROL_SIZE = 120;
+		const BAR_W = 100;
+		const BAR_H = 50;
+		const MARGIN = 5;
+
+		const control = new Phaser.GameObjects.Ellipse(this, SCREENW - (CONTROL_SIZE / 2), (CONTROL_SIZE / 2), CONTROL_SIZE - MARGIN, CONTROL_SIZE - MARGIN, 0x888888, 0.5);
+		control.setStrokeStyle(2.0, 0x000000);
+		this.control = control;
+		this.uiLayer.add(control);
+
+		this.progressbar = new ProgressBar({
+			scene: this, layer: this.uiLayer,
+			x: SCREENW - BAR_W - MARGIN, y: SCREENH - BAR_H - MARGIN,
+			w: BAR_W, h: BAR_H
+		});
 	}
 
 	initLevel() {
@@ -142,11 +162,7 @@ export default class extends Phaser.Scene {
 
 		this.initGates();
 
-		const CONTROL_SIZE = 70;
-		const control = new Phaser.GameObjects.Ellipse(this, SCREENW - CONTROL_SIZE, CONTROL_SIZE, CONTROL_SIZE * 2 - 5, CONTROL_SIZE * 2 - 5, 0x888888, 0.5);
-		control.setStrokeStyle(2.0, 0x000000);
-		this.control = control;
-		this.uiLayer.add(control);
+		this.initUI();
 
 		assert(this.startNode !== null);
 		assert(this.endNode !== null);
@@ -155,6 +171,8 @@ export default class extends Phaser.Scene {
 
 	endReached() {
 		this.score++;
+		this.progressbar.refresh(this.score, MAX_SCORE);
+
 		if (this.score > MAX_SCORE) {
 			alert('You won this level!');
 			this.level++;

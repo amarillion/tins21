@@ -4,16 +4,32 @@ import BootScene from './scenes/Boot.js';
 import SplashScene from './scenes/Splash.js';
 import GameScene from './scenes/Game.ts';
 import { MenuScene } from './scenes/menu.js';
-import config from './config.js';
 import { MenuComponent } from './menuComponent.js';
 
-const gameConfig = Object.assign(config, {
+import { SCREENH, SCREENW } from './constants.js';
+
+const config = {
+	type: Phaser.AUTO,
+	parent: 'content',
+	disableContextMenu: true,
+	backgroundColor: '#dddddd',
+	width: SCREENW,
+	height: SCREENH,
+	localStorageName: 'tins21-amarillion',
+	fps: {
+		target: 60
+	},
+	scale: {
+		mode: Phaser.Scale.FIT,
+		autoCenter: Phaser.Scale.CENTER_BOTH,
+		parent: 'content'
+	},
 	scene: [BootScene, SplashScene, GameScene, MenuScene]
-});
+};
 
 class Game extends Phaser.Game {
 	constructor () {
-		super(gameConfig);
+		super(config);
 	}
 }
 

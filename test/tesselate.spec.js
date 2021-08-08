@@ -1,4 +1,4 @@
-import { TESSELATIONS } from "../src/tesselate";
+import { TESSELATIONS } from '../src/tesselate';
 
 test('tesselation links are consistent', () => {
 
