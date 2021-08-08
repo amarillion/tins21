@@ -1,4 +1,4 @@
-import { Grid, Node } from '../grid.ts';
+import { Grid, Node } from '../grid';
 import Phaser from 'phaser';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import { assert } from '@amarillion/helixgraph/lib/assert.js';
@@ -7,7 +7,7 @@ import { breadthFirstSearch } from '@amarillion/helixgraph';
 
 import Mushroom from '../sprites/Mushroom.js';
 import { TESSELATIONS } from '../tesselate.js';
-import { TILES, initTiles } from '../tiles.js';
+import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../config.js';
 
 function initGrid(tesselation) {
@@ -38,6 +38,7 @@ function initGrid(tesselation) {
 }
 
 export default class extends Phaser.Scene {
+
 	constructor () {
 		super({ key: 'GameScene' });
 	}
@@ -52,7 +53,7 @@ export default class extends Phaser.Scene {
 		rect.isFilled = false;
 		rect.isStroked = true;
 		rect.setStrokeStyle(3.0, 0xAA8888, 1.0);
-		this.add.existing(rect);
+		this.bgLayer.add(rect);
 		rect.setOrigin(0,0);
 		console.log({ xco: unit.xco, yco: unit.yco, w: unit.unitSize[0], h: unit.unitSize[1], rect });
 	}
@@ -80,7 +81,7 @@ export default class extends Phaser.Scene {
 				poly.isFilled = false;
 				poly.isStroked = true;
 				poly.setStrokeStyle(3.0, 0xA0A0A0, 1.0);
-				this.add.existing(poly);
+				this.bgLayer.add(poly);
 				node.delegate = poly;
 			}
 			
@@ -88,9 +89,46 @@ export default class extends Phaser.Scene {
 	
 	}
 
-	initLevel() {
-		this.add.displayList.removeAll();
+	spriteLayer : Phaser.GameObjects.Layer;
+	bgLayer: Phaser.GameObjects.Layer;
+	tileLayer: Phaser.GameObjects.Layer;
+	uiLayer: Phaser.GameObjects.Layer;
 
+	score: number;
+	level: number;
+
+	grid: Grid;
+	tileSet: Tile[];
+	noDeadEnds: Tile[];
+	startNode: Node;
+	endNode: Node;
+	control: any;
+	solution: Node[];
+
+	initGates() {
+		this.startNode = this.findNodeAt(150, 150);
+		this.setTile(this.startNode, this.tileSet[this.tileSet.length - 1]);
+		const c1 = new Phaser.GameObjects.Ellipse(this, this.startNode.cx, this.startNode.cy, 10, 10, 0xFF0000, 1.0);
+		this.spriteLayer.add(c1);
+
+		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
+		this.setTile(this.endNode, this.tileSet[this.tileSet.length - 1]);
+		const c2 = new Phaser.GameObjects.Ellipse(this, this.endNode.cx, this.endNode.cy, 10, 10, 0x00FF00, 1.0);
+		this.spriteLayer.add(c2);
+	}
+
+	initLevel() {
+		this.children.removeAll(); // was: this.add.displayList.removeAll
+		
+		this.bgLayer = this.add.layer();
+		this.bgLayer.setDepth(0);
+		this.tileLayer = this.add.layer();
+		this.tileLayer.setDepth(1);
+		this.spriteLayer = this.add.layer();
+		this.spriteLayer.setDepth(2);
+		this.uiLayer = this.add.layer();
+		this.uiLayer.setDepth(3);
+		
 		this.score = 0;
 
 		const tesselList = Object.values(TESSELATIONS);
@@ -99,25 +137,19 @@ export default class extends Phaser.Scene {
 		this.grid = initGrid(tesselation);
 		this.renderPolygons(this.grid);
 
-		const tileSet = TILES[tesselation.name];
+		this.tileSet = TILES[tesselation.name];
+		this.noDeadEnds = this.tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
 
-		this.noDeadEnds = tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
-
-		this.startNode = this.findNodeAt(150, 150);
-		this.setTile(this.startNode, tileSet[tileSet.length - 1]);
-		this.add.circle(150, 150, 10, 0xFF0000, 1.0);
-
-		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
-		this.setTile(this.endNode, tileSet[tileSet.length - 1]);
-		this.add.circle(SCREENW - 150, SCREENH - 150, 10, 0x00FF00, 1.0);
+		this.initGates();
 
 		const CONTROL_SIZE = 70;
-		const control = this.dragBase = this.add.circle(SCREENW - CONTROL_SIZE, CONTROL_SIZE, CONTROL_SIZE, 0x888888, 0.5);
+		const control = new Phaser.GameObjects.Ellipse(this, SCREENW - CONTROL_SIZE, CONTROL_SIZE, CONTROL_SIZE * 2 - 5, CONTROL_SIZE * 2 - 5, 0x888888, 0.5);
 		control.setStrokeStyle(2.0, 0x000000);
 		this.control = control;
+		this.uiLayer.add(control);
 
-		assert(this.startNode);
-		assert(this.endNode);
+		assert(this.startNode !== null);
+		assert(this.endNode !== null);
 
 	}
 
@@ -138,7 +170,7 @@ export default class extends Phaser.Scene {
 		for (const imgKey of TILES.DIAMOND) {
 			// const imgKey = pickOne(TILES.CAIRO)
 			console.log(imgKey);
-			this.add.image(xco, yco, imgKey);
+			this.add.image(xco, yco, imgKey.resKey);
 			xco += 128;
 			if (xco > SCREENW) {
 				yco += 128;
@@ -160,12 +192,12 @@ export default class extends Phaser.Scene {
 	}
 
 	addMonster() {
-		this.mushroom = new Mushroom({
+		const sprite = new Mushroom({
 			scene: this,
 			node: this.startNode,
 			asset: 'mushroom'
 		});
-		this.add.existing(this.mushroom);
+		this.spriteLayer.add(sprite);
 	}
 
 	findNodeAt(xco, yco) {
@@ -183,8 +215,10 @@ export default class extends Phaser.Scene {
 
 	setTile(node, tile) {
 		node.tile = tile;
-		node.tileImg = this.add.image(node.xco, node.yco, node.tile.resKey);
+		const img = new Phaser.GameObjects.Image(this, node.xco, node.yco, node.tile.resKey);
+		node.tileImg = img;
 		node.tileImg.rotation = node.element.rotation;
+		this.tileLayer.add(img);
 		this.checkPath();
 	}
 

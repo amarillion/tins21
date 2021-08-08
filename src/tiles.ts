@@ -4,7 +4,13 @@ import { TESSELATIONS } from './tesselate.js';
 import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
 import { SCALE } from './config.js';
 
-export const TILES = {};
+export type Tile = {
+	resKey: string,
+	connectionMask: number;
+}
+
+export const TILES : Record<string, Tile[]> = {};
+
 export function initTiles(scene) {
 	for (const tesselation of Object.values(TESSELATIONS)) {
 		TILES[tesselation.name] = [];
@@ -38,7 +44,7 @@ function renderTile(graphics, ox, oy, tesselation, connectionMask, fillColor, ou
 		scale(SCALE, SCALE),
 	);
 	const tPoints = applyToPoints(srcMatrix, points);
-	const polygon = new Phaser.Geom.Polygon(tPoints);
+	const polygon = new Phaser.Geom.Polygon(tPoints as any[]);
 
 	graphics.fillStyle(fillColor);
 	graphics.fillPoints(polygon.points, true);
