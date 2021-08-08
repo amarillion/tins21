@@ -1,4 +1,5 @@
 import menuBg from '../../assets/images/menu.png';
+import QRCode from 'qrcode';
 
 export class MenuComponent extends HTMLElement {
 
@@ -43,13 +44,24 @@ export class MenuComponent extends HTMLElement {
 				left: 30%;
 				top: 20%;
 			}
+			canvas {
+				position: absolute;
+				right: 1rem;
+				top: 1rem;
+			}
+			.buttonBar {
+				display: flex;
+				flex-direction: column;
+			}
 		</style>
 
 		<div class="main">
 			<div class="buttonBar">
 				<button id="startGame">Start Game</button>
+				<button id="fullScreen">Full Screen</button>
 			</div>
 		</div>
+		<canvas id="qrcanvas"></canvas>
 	`;
 	}
 
@@ -58,6 +70,21 @@ export class MenuComponent extends HTMLElement {
 			this.dispatchEvent(new CustomEvent('Start'));
 			this.dispatchEvent(new CustomEvent('button-pressed'));
 		});
+
+		this.shadowRoot.querySelector('#fullScreen').addEventListener('click', () => {
+			let elem = document.documentElement;
+
+			elem.requestFullscreen({ navigationUI: 'show' }).then(() => { }).catch(err => {
+				alert(`An error occurred while trying to switch into full-screen mode: ${err.message} (${err.name})`);
+			});
+		});
+
+		const canvas = this.shadowRoot.getElementById('qrcanvas');
+ 
+		QRCode.toCanvas(canvas, window.location.toString(), function (error) {
+			if (error) console.error(error);
+		});
+
 	}
 
 }

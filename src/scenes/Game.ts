@@ -206,7 +206,8 @@ export class Game extends Phaser.Scene {
 		const sprite = new Mushroom({
 			scene: this,
 			node: this.startNode,
-			asset: 'mushroom'
+			asset: Math.random() > 0.5 ? 'Fluff' : 'banana'
+			// asset: 'alt-bun'
 		});
 		this.spriteLayer.add(sprite);
 	}

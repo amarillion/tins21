@@ -9,11 +9,13 @@ export default class extends Phaser.Scene {
 		//
 		// load your assets
 		//
-		this.load.image('mushroom', 'assets/images/mushroom2.png');
+		this.load.image('Fluff', './assets/images/Fluff.png');
+		this.load.image('alt-bun', './assets/images/alt-bun.png');
+		this.load.image('banana', './assets/images/bananana.png');
 	}
 
 	create () {
-		this.scene.start('GameScene'); // TODO: change back to MenuScene
+		this.scene.start('MenuScene'); // TODO: change back to MenuScene
 	}
 
 }
