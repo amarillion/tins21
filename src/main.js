@@ -4,7 +4,7 @@ import BootScene from './scenes/Boot.js';
 import SplashScene from './scenes/Splash.js';
 import GameScene from './scenes/Game.ts';
 import { MenuScene } from './scenes/menu.js';
-import { MenuComponent } from './menuComponent.js';
+import { MenuComponent } from './components/menuComponent.js';
 
 import { SCREENH, SCREENW } from './constants.js';
 

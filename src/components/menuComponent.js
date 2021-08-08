@@ -1,4 +1,4 @@
-import menuBg from '../assets/images/menu.png';
+import menuBg from '../../assets/images/menu.png';
 
 export class MenuComponent extends HTMLElement {
 
