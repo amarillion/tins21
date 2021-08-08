@@ -9,4 +9,12 @@ export class Banana extends MapSprite {
 		this.play('banana');
 	}
 
+	determineNextNode() {
+		if (this.node === this.scene.endNode) {
+			this.scene.endReached();
+			this.destroy();
+		}
+		return super.determineNextNode();
+	}
+
 }

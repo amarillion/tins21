@@ -24,8 +24,9 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 		
 		if(exits.length === 0) {
 			this.destroy();
+			return;
 		}
-		
+
 		let result;
 
 		if (this.solution && exits.indexOf(this.solution[0]) >= 0) {
@@ -75,10 +76,6 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 			this.prevNode = this.node;
 			this.node = this.nextNode;
 			this.nextNode = null;
-			if (this.node === this.scene.endNode) {
-				this.scene.endReached();
-				this.destroy();
-			}
 		}
 	}
 }

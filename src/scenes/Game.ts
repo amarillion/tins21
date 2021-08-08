@@ -247,9 +247,23 @@ export class Game extends Phaser.Scene {
 			scene: this,
 			node: this.startNode,
 		};
-		const sprite = Math.random() > 0.5 ? new Banana(config) : new Fluff(config);
-
+		const sprite = new Banana(config);
 		this.spriteLayer.add(sprite);
+		
+		
+		if (Math.random() > 0.5) {
+			
+			// pick a random node
+			const cell = this.grid.randomCell();
+			const node = pickOne(cell.nodes);
+
+			//TODO: instead - pick a random node that doesn't have a tile, and look for an adjacent one that does
+			if (node.tile) {
+				const sprite2 = new Fluff({scene: this, node});
+				this.spriteLayer.add(sprite2);
+			}
+		}
+
 	}
 
 	findNodeAt(xco, yco) {
