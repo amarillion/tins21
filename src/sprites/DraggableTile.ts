@@ -34,6 +34,16 @@ export default class extends Phaser.GameObjects.Sprite {
 		this.y = pointer.y;		
 	}
 
+	rotateLeft() {
+		const sides = this.scene.tesselation.sides;
+		this.rotation -= (Math.PI * 2 / sides);
+	}
+
+	rotateRight() {
+		const sides = this.scene.tesselation.sides;
+		this.rotation += (Math.PI * 2 / sides);
+	}
+
 	dragRelease( pointer ) {
 		const scene = this.scene;
 		const node = scene.findNodeAt(this.x, this.y);

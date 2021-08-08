@@ -131,11 +131,33 @@ export class Game extends Phaser.Scene {
 		this.spriteLayer.add(c2);
 	}
 
+	onRotateLeft() {
+		if (this.draggableTile) this.draggableTile.rotateLeft();
+	}
+
+	onRotateRight() {
+		if (this.draggableTile) this.draggableTile.rotateRight();
+	}
+
 	initUI() {
 		const control = new Phaser.GameObjects.Ellipse(this, SCREENW - (CONTROL_SIZE / 2), (CONTROL_SIZE / 2), CONTROL_SIZE - MARGIN, CONTROL_SIZE - MARGIN, 0x888888, 0.5);
 		control.setStrokeStyle(2.0, 0x000000);
 		this.control = control;
 		this.uiLayer.add(control);
+
+		const rotateButton1 = new Phaser.GameObjects.Text(this, 
+			SCREENW - CONTROL_SIZE + 20, CONTROL_SIZE, 
+			'L', { backgroundColor: '#00f', color: '#fff' }
+		);
+		rotateButton1.setInteractive().on('pointerdown', () => this.onRotateLeft() );
+		this.uiLayer.add(rotateButton1);
+
+		const rotateButton2 = new Phaser.GameObjects.Text(this, 
+			SCREENW - 20, CONTROL_SIZE, 
+			'R', { backgroundColor: '#00f', color: '#fff' }
+		);
+		rotateButton2.setInteractive().on('pointerdown', () => this.onRotateRight() );
+		this.uiLayer.add(rotateButton2);
 
 		this.progressbar = new ProgressBar({
 			scene: this, layer: this.uiLayer,
