@@ -113,7 +113,7 @@ export class Game extends Phaser.Scene {
 	endNode: Node;
 	solution: Node[];
 	progressbar: ProgressBar;
-	control: Phaser.GameObjects.GameObject;
+	control: Phaser.GameObjects.Ellipse;
 	nextTile: Tile;
 	draggableTile: DraggableTile;
 	uiBlocked: boolean;
@@ -286,6 +286,7 @@ export class Game extends Phaser.Scene {
 		this.initLevel();
 		
 		this.input.on('pointerdown', (pointer) => {
+			/*
 			const node = this.findNodeAt(pointer.x, pointer.y);
 			if (node && !node.tile) {
 				assert(!!this.nextTile);
@@ -293,6 +294,56 @@ export class Game extends Phaser.Scene {
 				this.updateNextTile();
 				// this.debugAdjacent(node);
 			}
+			*/
+			this.onDown(pointer);
 		});
+		this.input.on('pointermove', (pointer) => this.onMove(pointer));
+		this.input.on('pointerup', (pointer) => this.onRelease(pointer));
 	}
+
+	dragTarget : DraggableTile;
+
+	onDown(pointer) {
+		/**
+		 * Phaser annoyance: the geom of an ellipse object does not have the translation information
+		 *  needed to convert to screen coordinates.
+		 * 
+		 * Therefore there is no straightforward way to check if an ellipse object overlaps with the mouse pointer -
+		 * you need to do an error-prone translation first
+		 */
+		const xx = pointer.x - this.control.x + this.control.displayOriginX;
+		const yy = pointer.y - this.control.y + this.control.displayOriginY;
+		const contains = Phaser.Geom.Ellipse.Contains(this.control.geom, xx, yy);
+		if (contains) {
+			this.dragTarget = this.draggableTile;
+		}
+	}
+
+	onMove(pointer) {
+		if (this.dragTarget) {
+			this.dragTarget.x = pointer.x;
+			this.dragTarget.y = pointer.y;
+		}
+	}
+
+	onRelease(pointer) {
+		if (!this.dragTarget) return;
+
+		const node = this.findNodeAt(pointer.x, pointer.y);
+		const dragSuccess = (node && !node.tile);
+		if (dragSuccess) {
+			this.setTile(node, this.nextTile);
+			this.updateNextTile();
+		}
+		else {
+			this.tweens.add({
+				targets: [ this.dragTarget ],
+				duration: 200,
+				x: this.control.x,
+				y: this.control.y
+			});
+		}
+		this.dragTarget = null;
+	}
+
 }
