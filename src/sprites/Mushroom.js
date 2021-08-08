@@ -11,7 +11,6 @@ export default class extends Phaser.GameObjects.Sprite {
 		super(scene, node.cx, node.cy, asset);
 		this.node = node;
 		this.stepsRemain = 0;
-		this.scale = 2;
 		this.prevNode = null;
 		this.solution = scene.solution && scene.solution.slice(1);
 	}

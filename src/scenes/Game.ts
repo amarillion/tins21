@@ -144,6 +144,21 @@ export class Game extends Phaser.Scene {
 		});
 	}
 
+	addReusableAnimations() {
+		this.anims.create({
+			key: 'fluff',
+			frames: this.anims.generateFrameNumbers('fluff-spritesheet', { frames: [ 0, 1 ] }),
+			frameRate: 5,
+			repeat: 0
+		});
+		this.anims.create({
+			key: 'banana',
+			frames: this.anims.generateFrameNumbers('banana-spritesheet', { frames: [0, 1] }),
+			frameRate: 5,
+			repeat: 0
+		});
+	}
+
 	initLevel() {
 		this.children.removeAll(); // was: this.add.displayList.removeAll
 		
@@ -207,10 +222,12 @@ export class Game extends Phaser.Scene {
 		const sprite = new Mushroom({
 			scene: this,
 			node: this.startNode,
-			asset: Math.random() > 0.5 ? 'Fluff' : 'banana'
+			asset: 'banana-spritesheet',
+			// Math.random() > 0.5 ? 'Fluff' : 'banana'
 			// asset: 'alt-bun'
 		});
 		this.spriteLayer.add(sprite);
+		sprite.play('banana');
 	}
 
 	findNodeAt(xco, yco) {
@@ -262,6 +279,8 @@ export class Game extends Phaser.Scene {
 	}
 
 	create () {
+		this.addReusableAnimations();
+		
 		// make tile variants
 		this.level = 0;
 		this.uiBlocked = false;
