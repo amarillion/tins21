@@ -304,6 +304,9 @@ export class Game extends Phaser.Scene {
 		});
 		this.input.on('pointermove', (pointer) => this.onMove(pointer));
 		this.input.on('pointerup', (pointer) => this.onRelease(pointer));
+
+		const music = this.sound.add('music', { loop: true });
+		music.play();
 	}
 
 	dragTarget : DraggableTile;
