@@ -2,6 +2,7 @@ import { assert } from '@amarillion/helixgraph/lib/assert.js';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import Phaser from 'phaser';
 import { Node } from '../grid.ts';
+import { Stream } from '@amarillion/helixgraph/lib/iterableUtils.js';
 
 const STEPS = 40;
 
@@ -19,15 +20,19 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 	}
 
 	determineNextNode() {
-		const links = Node.getAdjacent(this.node).map(v => v[1]).filter(n => n !== this.prevNode);
-		assert(links.length > 0);
+		const exits = Stream.of(Node.getExits(this.node)).map(v => v[1]).filter(n => n !== this.prevNode).collect();
+		
+		if(exits.length === 0) {
+			this.destroy();
+		}
+		
 		let result;
 
-		if (this.solution && links.indexOf(this.solution[0]) >= 0) {
+		if (this.solution && exits.indexOf(this.solution[0]) >= 0) {
 			result = this.solution.shift();
 		}
 		else {
-			result = pickOne(links);
+			result = pickOne(exits);
 		}
 		return result;
 	}
@@ -36,6 +41,13 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 		if (!this.nextNode.tile) {
 			this.destroy();
 		}
+
+		const reversePath = Stream.of(Node.getExits(this.nextNode)).map(v => v[1]).find(n => n === this.node);
+		if (!reversePath) {
+			// we can't go further. Go back along the same path.
+			[this.node, this.nextNode] = [this.nextNode, this.node];
+		}
+	
 	}
 
 	preUpdate(time, delta) {

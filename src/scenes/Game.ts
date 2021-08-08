@@ -231,11 +231,12 @@ export class Game extends Phaser.Scene {
 
 	debugAdjacent(node) {
 		node.delegate.isFilled = true;
-		const adjacentList = Node.getAdjacent(node);
-		for (let i = 0; i < adjacentList.length; ++i) {
-			const adjacent = adjacentList[i][1];
-			setTimeout(() => adjacent.delegate.isFilled = true, (i+2) * 200);
-			setTimeout(() => adjacent.delegate.isFilled = false, (i+3) * 200);
+		let i = 0;
+		for (const [ , adjacent ] of Node.getAdjacent(node)) {
+			const delegate = adjacent.delegate as Phaser.GameObjects.Polygon;
+			setTimeout(() => delegate.isFilled = true, (i+2) * 200);
+			setTimeout(() => delegate.isFilled = false, (i+3) * 200);
+			i++;
 		}
 		setTimeout(() => node.delegate.isFilled = false, 100);
 		console.log(`{ dx: ${node.mx - 1}, dy: ${node.my - 1}, idx: ${node.idx} },`);

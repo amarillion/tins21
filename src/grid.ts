@@ -46,22 +46,30 @@ export class Node {
 		return `unit [${this.mx} ${this.my}] index: ${this.idx}`;
 	}
 
-	static getLinks(node) {
+	static getLinks(node : Node) {
 		return Object.entries(node.links);
 	}
 
-	static getAdjacent(node) {
+	static *getAdjacent(node : Node) {
+		for (const exit of Node.getExits(node)) {
+			const otherNode = exit[1];
+			for (const returns of Node.getExits(otherNode)) {
+				if (returns[1] === node) {
+					yield exit;
+				}
+			}
+		}
+	}
+
+	static *getExits(node : Node) {
 		const connectionMask = node.tile && node.tile.connectionMask || 0;
-		const links = Node.getLinks(node);
-		const result = [];
 		let bit = 1;
-		for (let i = 0; i < links.length; ++i) {
+		for (const link of Node.getLinks(node)) {
 			if ((connectionMask & bit) > 0) {
-				result.push(links[i]);
+				yield link;
 			}
 			bit *= 2;
 		}
-		return result;
 	}
 
 }
