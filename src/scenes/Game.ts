@@ -6,7 +6,7 @@ import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
 import { breadthFirstSearch } from '@amarillion/helixgraph';
 
 import Mushroom from '../sprites/Mushroom.js';
-import { TESSELATIONS } from '../tesselate';
+import { TESSELATIONS, TesselationType } from '../tesselate';
 import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
 import { ProgressBar } from '../sprites/progress-bar';
@@ -117,6 +117,7 @@ export class Game extends Phaser.Scene {
 	nextTile: Tile;
 	draggableTile: DraggableTile;
 	uiBlocked: boolean;
+	tesselation: TesselationType;
 
 	initGates() {
 		this.startNode = this.findNodeAt(150, 150);
@@ -157,12 +158,12 @@ export class Game extends Phaser.Scene {
 		
 		this.score = 0;
 		const levelData = LEVELDATA[this.level % LEVELDATA.length];
-		const tesselation = TESSELATIONS[levelData.tesselation];
+		this.tesselation = TESSELATIONS[levelData.tesselation];
 
-		this.grid = initGrid(tesselation);
+		this.grid = initGrid(this.tesselation);
 		this.renderPolygons(this.grid);
 
-		this.tileSet = TILES[tesselation.name];
+		this.tileSet = TILES[this.tesselation.name];
 		this.noDeadEnds = this.tileSet.filter(tile => !(tile.connectionMask in {0:0, 1:1, 2:2, 4:4, 8:8, 16:16, 32:32, 64:64}));
 
 		this.initGates();
@@ -301,33 +302,20 @@ export class Game extends Phaser.Scene {
 		const contains = Phaser.Geom.Ellipse.Contains(this.control.geom, xx, yy);
 		if (contains) {
 			this.dragTarget = this.draggableTile;
+			this.dragTarget.dragStart(pointer);
 		}
 	}
 
 	onMove(pointer) {
 		if (this.dragTarget) {
-			this.dragTarget.x = pointer.x;
-			this.dragTarget.y = pointer.y;
+			this.dragTarget.dragMove(pointer);
 		}
 	}
 
 	onRelease(pointer) {
 		if (!this.dragTarget) return;
 
-		const node = this.findNodeAt(pointer.x, pointer.y);
-		const dragSuccess = (node && !node.tile);
-		if (dragSuccess) {
-			this.setTile(node, this.nextTile);
-			this.updateNextTile();
-		}
-		else {
-			this.tweens.add({
-				targets: [ this.dragTarget ],
-				duration: 200,
-				x: this.control.x,
-				y: this.control.y
-			});
-		}
+		this.dragTarget.dragRelease(pointer);
 		this.dragTarget = null;
 	}
 
