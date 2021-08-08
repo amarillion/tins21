@@ -6,12 +6,14 @@ export default class extends Phaser.Scene {
 	}
 
 	preload () {
-		this.load.image('loaderBg', './assets/images/loader-bg.png');
-		this.load.image('loaderBar', './assets/images/loader-bar.png');
+		//
+		// load your assets
+		//
+		this.load.image('mushroom', 'assets/images/mushroom2.png');
 	}
 
-	update () {
-		this.scene.start('SplashScene');
+	create () {
+		this.scene.start('GameScene'); // TODO: change back to MenuScene
 	}
 
 }

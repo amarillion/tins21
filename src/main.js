@@ -1,12 +1,12 @@
 import Phaser from 'phaser';
 
 import BootScene from './scenes/Boot.js';
-import SplashScene from './scenes/Splash.js';
 import { Game as GameScene } from './scenes/Game.ts';
 import { MenuScene } from './scenes/menu.js';
 import { MenuComponent } from './components/menuComponent.js';
 
 import { SCREENH, SCREENW } from './constants.js';
+import { DebugTilesScene } from './scenes/DebugTilesScene.ts';
 
 const config = {
 	type: Phaser.AUTO,
@@ -24,7 +24,12 @@ const config = {
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 		parent: 'content'
 	},
-	scene: [BootScene, SplashScene, GameScene, MenuScene]
+	scene: [
+		BootScene, 
+		GameScene, 
+		MenuScene, 
+		DebugTilesScene 
+	]
 };
 
 class Game extends Phaser.Game {

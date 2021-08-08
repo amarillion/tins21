@@ -190,23 +190,6 @@ export class Game extends Phaser.Scene {
 		}
 	}
 
-	debugTilesPreview() {
-		const startx = 64, starty = 64;
-		let xco = startx;
-		let yco = starty;
-		
-		for (const tile of TILES.DIAMOND) {
-			// const imgKey = pickOne(TILES.CAIRO)
-			console.log(tile);
-			this.add.image(xco, yco, tile.resKey);
-			xco += 128;
-			if (xco > SCREENW) {
-				yco += 128;
-				xco = startx;
-			}
-		}
-	}
-
 	debugAdjacent(node) {
 		node.delegate.isFilled = true;
 		const adjacentList = Node.getAdjacent(node);
@@ -245,6 +228,7 @@ export class Game extends Phaser.Scene {
 	setTile(node : Node, tile : Tile) {
 		node.tile = tile;
 		const img = new Phaser.GameObjects.Image(this, node.xco, node.yco, node.tile.resKey);
+		img.setDisplayOrigin(tile.origin.x, tile.origin.y);
 		img.rotation = node.element.rotation;
 		node.tileImg = img;
 		this.tileLayer.add(img);

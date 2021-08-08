@@ -18,4 +18,4 @@ export const LEVELDATA = [
 		tesselation: TESSELATIONS.CAIRO.name
 	}
 
-]
+];

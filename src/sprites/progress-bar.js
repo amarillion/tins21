@@ -21,7 +21,7 @@ export class ProgressBar {
 		this.graphics.fillRect(this.x, this.y, this.w * fraction, this.h);
 		
 		this.graphics.lineStyle(3.0, 0x808080); // Phaser annoyance: parameter ordering inconsistent with fillStyle.
-		this.graphics.strokeRect(this.x, this.y, this.w, this.h); // Phaser annoyance: naming inconsistent: lineStyle vs strokeRect
+		this.graphics.strokeRect(this.x, this.y, this.w, this.h); // Phaser annoyance: naming inconsistent: Graphics.lineStyle vs Graphics.strokeRect vs Rectangle.strokeStyle
 	}
 
 }
