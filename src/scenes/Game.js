@@ -111,6 +111,11 @@ export default class extends Phaser.Scene {
 		this.setTile(this.endNode, tileSet[tileSet.length - 1]);
 		this.add.circle(SCREENW - 150, SCREENH - 150, 10, 0x00FF00, 1.0);
 
+		const CONTROL_SIZE = 70;
+		const control = this.dragBase = this.add.circle(SCREENW - CONTROL_SIZE, CONTROL_SIZE, CONTROL_SIZE, 0x888888, 0.5);
+		control.setStrokeStyle(2.0, 0x000000);
+		this.control = control;
+
 		assert(this.startNode);
 		assert(this.endNode);
 
