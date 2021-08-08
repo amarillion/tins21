@@ -11,6 +11,8 @@ import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
 import { ProgressBar } from '../sprites/progress-bar';
 import DraggableTile from '../sprites/DraggableTile';
+import { openDialog } from '../components/Dialog';
+import { LEVELDATA } from '../levels';
 
 const CONTROL_SIZE = 120;
 const BAR_W = 100;
@@ -114,6 +116,7 @@ export class Game extends Phaser.Scene {
 	control: Phaser.GameObjects.GameObject;
 	nextTile: Tile;
 	draggableTile: DraggableTile;
+	uiBlocked: boolean;
 
 	initGates() {
 		this.startNode = this.findNodeAt(150, 150);
@@ -153,9 +156,8 @@ export class Game extends Phaser.Scene {
 		this.uiLayer.setDepth(3);
 		
 		this.score = 0;
-
-		const tesselList = Object.values(TESSELATIONS);
-		const tesselation = tesselList[this.level % tesselList.length];
+		const levelData = LEVELDATA[this.level % LEVELDATA.length];
+		const tesselation = TESSELATIONS[levelData.tesselation];
 
 		this.grid = initGrid(tesselation);
 		this.renderPolygons(this.grid);
@@ -178,10 +180,13 @@ export class Game extends Phaser.Scene {
 		this.score++;
 		this.progressbar.refresh(this.score, MAX_SCORE);
 
-		if (this.score > MAX_SCORE) {
-			alert('You won this level!');
-			this.level++;
-			this.initLevel();
+		if (this.score === MAX_SCORE) {
+			openDialog('<h1>You won this level!</h1>', () => {
+				this.uiBlocked = false;
+				this.level++;
+				this.initLevel();
+			});
+			this.uiBlocked = true;
 		}
 	}
 
@@ -273,6 +278,7 @@ export class Game extends Phaser.Scene {
 	create () {
 		// make tile variants
 		this.level = 0;
+		this.uiBlocked = false;
 		initTiles(this);
 
 		this.time.addEvent({ delay: 1000, callback: () => this.addMonster(), loop: true });

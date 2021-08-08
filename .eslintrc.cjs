@@ -31,5 +31,6 @@ module.exports = {
 		'no-fallthrough': [ 'error' ],
 		'eol-last': ['error', 'always'],
 		'@typescript-eslint/explicit-module-boundary-types': ['off'],
+		'@typescript-eslint/no-empty-function': ['off'],
 	},
 };

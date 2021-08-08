@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 export class ProgressBar {
 	
 	constructor({ scene, layer, x, y, w, h, value = 0, max = 1.0 }) {
