@@ -5,7 +5,8 @@ import { assert } from '@amarillion/helixgraph/lib/assert.js';
 import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
 import { breadthFirstSearch } from '@amarillion/helixgraph';
 
-import Mushroom from '../sprites/Mushroom.js';
+import { Fluff } from '../sprites/Fluff.js';
+import { Banana } from '../sprites/Banana.js';
 import { TESSELATIONS, TesselationType } from '../tesselate';
 import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
@@ -171,13 +172,13 @@ export class Game extends Phaser.Scene {
 			key: 'fluff',
 			frames: this.anims.generateFrameNumbers('fluff-spritesheet', { frames: [ 0, 1 ] }),
 			frameRate: 5,
-			repeat: 0
+			repeat: -1
 		});
 		this.anims.create({
 			key: 'banana',
 			frames: this.anims.generateFrameNumbers('banana-spritesheet', { frames: [0, 1] }),
 			frameRate: 5,
-			repeat: 0
+			repeat: -1
 		});
 	}
 
@@ -241,15 +242,13 @@ export class Game extends Phaser.Scene {
 	}
 
 	addMonster() {
-		const sprite = new Mushroom({
+		const config = {
 			scene: this,
 			node: this.startNode,
-			asset: 'banana-spritesheet',
-			// Math.random() > 0.5 ? 'Fluff' : 'banana'
-			// asset: 'alt-bun'
-		});
+		};
+		const sprite = Math.random() > 0.5 ? new Banana(config) : new Fluff(config);
+
 		this.spriteLayer.add(sprite);
-		sprite.play('banana');
 	}
 
 	findNodeAt(xco, yco) {
