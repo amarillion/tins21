@@ -1,7 +1,18 @@
 const SIN60 = Math.sqrt(0.75);
 const PI = Math.PI;
 
-function getTriangleTesselation() {
+export type PrimitiveUnitPart = {x: number, y: number, rotation: number};
+
+export type TesselationType = {
+	points: Array<{x: number, y: number}>;
+	primitiveUnit: Array<PrimitiveUnitPart>;
+	name: string;
+	unitSize: number[];
+	links: Array<Array<{ dx: number, dy: number, idx: number }>>
+	sides: number;
+};
+
+function getTriangleTesselation() : TesselationType  {
 	const points = [
 		{x: 0, y: 0      },
 		{x: 1, y: 2*SIN60},
@@ -43,7 +54,7 @@ function getTriangleTesselation() {
 	};
 }
 
-function getSquareTesselation() {
+function getSquareTesselation() : TesselationType {
 	const points = [
 		{x: 0, y: 0 },
 		{x: 1.5, y: 0 },
@@ -73,7 +84,7 @@ function getSquareTesselation() {
 	};
 }
 
-function getHexagonalTesselation() {	
+function getHexagonalTesselation() : TesselationType  {	
 	const points = [
 		{ x: 0,       y: 0   }, 
 		{ x: 0,       y: 1   }, 
@@ -117,7 +128,7 @@ function getHexagonalTesselation() {
 	};
 }
 
-function getDiamondTesselation() {
+function getDiamondTesselation() : TesselationType {
 	const points = [
 		{x: 0, y:  0 },
 		{x: 0, y:  1 },
@@ -177,7 +188,7 @@ function getDiamondTesselation() {
 	};
 }
 
-function getCairoTesselation() {
+function getCairoTesselation(): TesselationType  {
 	const points = [
 		{ x: 0,         y: 0 },
 		{ x: SIN60,     y: 0.5 },
@@ -263,7 +274,7 @@ function getCairoTesselation() {
 	};
 }
 
-export const TESSELATIONS = {
+export const TESSELATIONS : Record<string, TesselationType> = {
 	CAIRO: getCairoTesselation(),
 	DIAMOND: getDiamondTesselation(),
 	SQUARE: getSquareTesselation(),

@@ -1,7 +1,7 @@
 #!/usr/bin/node
 
 import { applyToPoints, rotate, scale, transform, translate } from 'transformation-matrix';
-import { TESSELATIONS } from '../src/tesselate.js';
+import { TESSELATIONS } from '../src/tesselate';
 
 import { SCALE } from '../src/constants.js';
 

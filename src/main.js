@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 import BootScene from './scenes/Boot.js';
 import SplashScene from './scenes/Splash.js';
-import GameScene from './scenes/Game.ts';
+import { Game as GameScene } from './scenes/Game.ts';
 import { MenuScene } from './scenes/menu.js';
 import { MenuComponent } from './components/menuComponent.js';
 

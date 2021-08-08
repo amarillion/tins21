@@ -13,7 +13,7 @@ export default class extends Phaser.Scene {
 	}
 
 	create () {
-		this.scene.start('GameScene'); // TODO: change back to MenuScene
+		this.scene.start('MenuScene'); // TODO: change back to MenuScene
 	}
 
 	// update () {}

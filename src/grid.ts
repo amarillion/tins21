@@ -1,5 +1,7 @@
 import { TemplateGrid } from '@amarillion/helixgraph/lib/BaseGrid.js';
 import {scale, rotate, translate, transform, applyToPoints } from 'transformation-matrix';
+import { Tile } from './tiles';
+import { PrimitiveUnitPart } from './tesselate';
 
 type Point = {
 	x: number;
@@ -17,9 +19,11 @@ export class Node {
 	points: Point[];
 	cx: number;
 	cy: number;
-	element: Record<string, unknown>;
+	element: PrimitiveUnitPart;
 	links: Node[];
 	delegate: unknown;
+	tile: Tile;
+	tileImg: unknown;
 
 	constructor(mx, my, idx, xco, yco, element, points, SCALE) {
 		this.mx = mx;

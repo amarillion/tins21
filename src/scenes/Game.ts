@@ -6,10 +6,16 @@ import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
 import { breadthFirstSearch } from '@amarillion/helixgraph';
 
 import Mushroom from '../sprites/Mushroom.js';
-import { TESSELATIONS } from '../tesselate.js';
+import { TESSELATIONS } from '../tesselate';
 import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
 import { ProgressBar } from '../sprites/progress-bar';
+import DraggableTile from '../sprites/DraggableTile';
+
+const CONTROL_SIZE = 120;
+const BAR_W = 100;
+const BAR_H = 50;
+const MARGIN = 5;
 
 function initGrid(tesselation) {
 	const { unitSize, links } = tesselation;
@@ -38,7 +44,7 @@ function initGrid(tesselation) {
 	return grid;
 }
 
-export default class extends Phaser.Scene {
+export class Game extends Phaser.Scene {
 
 	constructor () {
 		super({ key: 'GameScene' });
@@ -103,9 +109,11 @@ export default class extends Phaser.Scene {
 	noDeadEnds: Tile[];
 	startNode: Node;
 	endNode: Node;
-	control: Phaser.GameObjects.GameObject;
 	solution: Node[];
 	progressbar: ProgressBar;
+	control: Phaser.GameObjects.GameObject;
+	nextTile: Tile;
+	draggableTile: DraggableTile;
 
 	initGates() {
 		this.startNode = this.findNodeAt(150, 150);
@@ -120,11 +128,6 @@ export default class extends Phaser.Scene {
 	}
 
 	initUI() {
-		const CONTROL_SIZE = 120;
-		const BAR_W = 100;
-		const BAR_H = 50;
-		const MARGIN = 5;
-
 		const control = new Phaser.GameObjects.Ellipse(this, SCREENW - (CONTROL_SIZE / 2), (CONTROL_SIZE / 2), CONTROL_SIZE - MARGIN, CONTROL_SIZE - MARGIN, 0x888888, 0.5);
 		control.setStrokeStyle(2.0, 0x000000);
 		this.control = control;
@@ -164,6 +167,8 @@ export default class extends Phaser.Scene {
 
 		this.initUI();
 
+		this.updateNextTile();
+
 		assert(this.startNode !== null);
 		assert(this.endNode !== null);
 
@@ -180,15 +185,15 @@ export default class extends Phaser.Scene {
 		}
 	}
 
-	createTilesPreview() {
+	debugTilesPreview() {
 		const startx = 64, starty = 64;
 		let xco = startx;
 		let yco = starty;
 		
-		for (const imgKey of TILES.DIAMOND) {
+		for (const tile of TILES.DIAMOND) {
 			// const imgKey = pickOne(TILES.CAIRO)
-			console.log(imgKey);
-			this.add.image(xco, yco, imgKey.resKey);
+			console.log(tile);
+			this.add.image(xco, yco, tile.resKey);
 			xco += 128;
 			if (xco > SCREENW) {
 				yco += 128;
@@ -232,11 +237,11 @@ export default class extends Phaser.Scene {
 		return null;
 	}
 
-	setTile(node, tile) {
+	setTile(node : Node, tile : Tile) {
 		node.tile = tile;
 		const img = new Phaser.GameObjects.Image(this, node.xco, node.yco, node.tile.resKey);
+		img.rotation = node.element.rotation;
 		node.tileImg = img;
-		node.tileImg.rotation = node.element.rotation;
 		this.tileLayer.add(img);
 		this.checkPath();
 	}
@@ -247,6 +252,22 @@ export default class extends Phaser.Scene {
 		if (this.solution) {
 			console.log(this.solution);
 		}
+	}
+
+	updateNextTile() {
+		this.nextTile = pickOne(this.noDeadEnds);
+
+		if (this.draggableTile) {
+			this.draggableTile.destroy();
+		}
+
+		this.draggableTile = new DraggableTile({
+			scene: this, 
+			x: SCREENW - (CONTROL_SIZE / 2),
+			y: (CONTROL_SIZE / 2),
+			tile: this.nextTile
+		});
+		this.uiLayer.add(this.draggableTile);
 	}
 
 	create () {
@@ -260,9 +281,10 @@ export default class extends Phaser.Scene {
 		
 		this.input.on('pointerdown', (pointer) => {
 			const node = this.findNodeAt(pointer.x, pointer.y);
-			if (node) {
-				const tile = pickOne(this.noDeadEnds); 
-				this.setTile(node, tile);
+			if (node && !node.tile) {
+				assert(!!this.nextTile);
+				this.setTile(node, this.nextTile);
+				this.updateNextTile();
 				// this.debugAdjacent(node);
 			}
 		});
