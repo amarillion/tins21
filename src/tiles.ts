@@ -36,15 +36,15 @@ function createTile(scene, tesselation, connectionMask) {
 
 function renderTile(graphics, ox, oy, tesselation, connectionMask, fillColor, outlineColor, pathColor) {
 	const { points, links, primitiveUnit, unitSize } = tesselation;
-	let ccx = points.reduce((prev, cur) => prev + cur.x, 0) / points.length;
-	let ccy = points.reduce((prev, cur) => prev + cur.y, 0) / points.length;
+	const ccx = points.reduce((prev, cur) => prev + cur.x, 0) / points.length;
+	const ccy = points.reduce((prev, cur) => prev + cur.y, 0) / points.length;
 	
 	const srcMatrix = transform(
 		translate(ox, oy),
 		scale(SCALE, SCALE),
 	);
 	const tPoints = applyToPoints(srcMatrix, points);
-	const polygon = new Phaser.Geom.Polygon(tPoints as any[]);
+	const polygon = new Phaser.Geom.Polygon(tPoints as Phaser.Types.Math.Vector2Like[]);
 
 	graphics.fillStyle(fillColor);
 	graphics.fillPoints(polygon.points, true);

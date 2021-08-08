@@ -16,5 +16,5 @@ export default class extends Phaser.Scene {
 		this.scene.start('MenuScene');
 	}
 
-	update () {}
+	// update () {}
 }

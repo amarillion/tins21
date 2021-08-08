@@ -1,19 +1,24 @@
 module.exports = {
-	'env': {
+	env: {
 		'browser': true,
 		'es6': true,
 		'node' : true,
 		'jest': true
 	},
-	'extends': [
+	extends: [
 		'eslint:recommended',
+		'plugin:@typescript-eslint/recommended',
 	],
-	'parser': 'babel-eslint',
-	'parserOptions': {
+	root: true,
+	parser: '@typescript-eslint/parser',
+	plugins: [
+		'@typescript-eslint',
+	],
+	parserOptions: {
 		'sourceType': 'module',
 		'ecmaVersion': 2020
 	},
-	'rules': {
+	rules: {
 		'indent': [ 'error', 'tab', { 'SwitchCase': 1 , 'ignoredNodes': ['TemplateLiteral > *'] } ],
 		'quotes': [ 'error', 'single', { 'allowTemplateLiterals': true } ],
 		'semi': [ 'error', 'always' ],
@@ -25,7 +30,6 @@ module.exports = {
 		'no-var': [ 'error' ],
 		'no-fallthrough': [ 'error' ],
 		'eol-last': ['error', 'always'],
+		'@typescript-eslint/explicit-module-boundary-types': ['off'],
 	},
-	'globals': {
-	}
 };

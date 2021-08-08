@@ -8,7 +8,7 @@
 		"clean": "rm -r dist/*",
 		"build": "webpack --mode production",
 		"watch": "webpack --watch --mode development",
-		"lint": "eslint \"src/**/*.js\"",
+		"lint": "eslint \"src/**/*.?s\"",
 		"dev": "webpack serve --mode development",
 		"test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage"
 	},
@@ -21,10 +21,11 @@
 	"homepage": "https://github.com/amarillion/tins21#readme",
 	"devDependencies": {
 		"@types/jest": "^26.0.24",
-		"babel-eslint": "^10.1.0",
+		"@typescript-eslint/eslint-plugin": "^4.29.0",
+		"@typescript-eslint/parser": "^4.29.0",
 		"copy-webpack-plugin": "9.0.1",
 		"cross-env": "^7.0.3",
-		"eslint": "7.32.0",
+		"eslint": "^7.32.0",
 		"esm": "3.2.25",
 		"file-loader": "^6.2.0",
 		"html-webpack-plugin": "5.3.2",

@@ -17,17 +17,17 @@ function initGrid(tesselation) {
 	const mh = Math.ceil(SCREENH / SCALE / unitSize[1]);
 	
 	// let mw = 8, mh = 4;
-	let xco = 0, yco = 0;
+	const xco = 0;
+	let yco = 0;
 
 	const grid = new Grid(mw, mh); // TODO: infinite grid?
 
 	for (let my = 0; my < mh; ++my) {
-		let secondX = xco;
-		let secondY = yco;
+		let rowX = xco;
 		for (let mx = 0; mx < mw; ++mx) {
 			const unit = grid.get(mx, my);
-			unit.addPrimitiveUnit(mx, my, secondX, secondY, tesselation, SCALE);
-			secondX += unitSize[0] * SCALE;
+			unit.addPrimitiveUnit(mx, my, rowX, yco, tesselation, SCALE);
+			rowX += unitSize[0] * SCALE;
 		}
 		yco += unitSize[1] * SCALE;
 	}
@@ -42,8 +42,8 @@ export default class extends Phaser.Scene {
 	constructor () {
 		super({ key: 'GameScene' });
 	}
-	init () {}
-	preload () {}
+	// init () {}
+	// preload () {}
 
 	debugPrimaryUnitRectangle(unit) {
 		// render primary unit rectangle
@@ -102,7 +102,7 @@ export default class extends Phaser.Scene {
 	noDeadEnds: Tile[];
 	startNode: Node;
 	endNode: Node;
-	control: any;
+	control: Phaser.GameObjects.GameObject;
 	solution: Node[];
 
 	initGates() {
@@ -205,7 +205,8 @@ export default class extends Phaser.Scene {
 		for (const unit of this.grid.eachNode()) {
 			for (const node of unit.nodes) {
 				if (!node.delegate) continue; // outside screen is undefined
-				if (Phaser.Geom.Polygon.Contains(node.delegate.geom, xco, yco)) {
+				const delegate = node.delegate as Phaser.GameObjects.Polygon;
+				if (Phaser.Geom.Polygon.Contains(delegate.geom, xco, yco)) {
 					return node;
 				}
 			}

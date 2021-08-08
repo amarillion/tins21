@@ -1,6 +1,11 @@
 import { TemplateGrid } from '@amarillion/helixgraph/lib/BaseGrid.js';
 import {scale, rotate, translate, transform, applyToPoints } from 'transformation-matrix';
 
+type Point = {
+	x: number;
+	y: number;
+}
+
 export class Node {
 	mx: number;
 	my: number;
@@ -9,11 +14,12 @@ export class Node {
 	unitYco: number;
 	xco: number;
 	yco: number;
-	points: any[];
+	points: Point[];
 	cx: number;
 	cy: number;
-	element: any;
-	links: any[];
+	element: Record<string, unknown>;
+	links: Node[];
+	delegate: unknown;
 
 	constructor(mx, my, idx, xco, yco, element, points, SCALE) {
 		this.mx = mx;
@@ -29,7 +35,7 @@ export class Node {
 			translate(element.x, element.y),
 			rotate(element.rotation),
 		);
-		this.points = applyToPoints(matrix, points);
+		this.points = applyToPoints(matrix, points) as Point[];
 		this.cx = this.points.reduce((prev, cur) => prev + cur.x, 0) / this.points.length;
 		this.cy = this.points.reduce((prev, cur) => prev + cur.y, 0) / this.points.length;
 		this.element = element;
@@ -47,7 +53,7 @@ export class Node {
 	static getAdjacent(node) {
 		const connectionMask = node.tile && node.tile.connectionMask || 0;
 		const links = Node.getLinks(node);
-		let result = [];
+		const result = [];
 		let bit = 1;
 		for (let i = 0; i < links.length; ++i) {
 			if ((connectionMask & bit) > 0) {
@@ -64,11 +70,11 @@ export class Node {
 export class Unit {
 	x: number;
 	y: number;
-	grid: any;
-	nodes: any[];
+	grid: Grid;
+	nodes: Node[];
 	xco: number;
 	yco: number;
-	unitSize: any;
+	unitSize: [number, number];
 
 	constructor(x, y, grid) {
 		this.x = x;
@@ -111,8 +117,8 @@ export class Grid extends TemplateGrid<Unit> {
 	initLinks(linksTemplate) {
 		
 		for (const unit of this.eachNode()) {
-			let mx = unit.x;
-			let my = unit.y;
+			const mx = unit.x;
+			const my = unit.y;
 			for (let l = 0; l < linksTemplate.length; ++l) {
 				const node = unit.nodes[l];
 				if (!node) continue;
