@@ -19,6 +19,9 @@ https://github.com/amarillion/tins21/dist
 Create a path by dragging tiles from the top-right corner into the field.
 You can click the L + R buttons (before dragging) to rotate a tile.
 
+Create a path, but be careful that the fluffs don't sabotage it.
+If the fluffs get too annoying, DRAG them away.
+
 Each level has a different geometry.
 
 The goal of each level is to collect enough bananas.

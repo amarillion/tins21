@@ -24,7 +24,9 @@ And they sure love bananas!
 </p>
 <h2>How to play</h2>
 DRAG your tile from the TOP-RIGHT corner.
-ROTATE before you drag, by clicking the L or R buttons
+ROTATE before you drag, by clicking the L or R buttons.
+Create a path, but be careful that the fluffs don't sabotage it.
+If the fluffs get too annoying, DRAG them away.
 `,
 		tesselation: TESSELATIONS.SQUARE.name
 	}, { // 1
