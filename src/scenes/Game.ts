@@ -5,8 +5,8 @@ import { assert } from '@amarillion/helixgraph/lib/assert.js';
 import { trackbackNodes } from '@amarillion/helixgraph/lib/pathFinding.js';
 import { breadthFirstSearch } from '@amarillion/helixgraph';
 
-import { Fluff } from '../sprites/Fluff.js';
-import { Banana } from '../sprites/Banana.js';
+import { Fluff } from '../sprites/Fluff';
+import { Banana } from '../sprites/Banana';
 import { TESSELATIONS, TesselationType } from '../tesselate';
 import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';

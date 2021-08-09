@@ -1,7 +1,7 @@
 import { Stream } from '@amarillion/helixgraph/lib/iterableUtils.js';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
-import { MapSprite } from './MapSprite.js';
-import { Node } from '../grid.ts';
+import { MapSprite } from './MapSprite';
+import { Node } from '../grid';
 
 export class Fluff extends MapSprite {
 	
