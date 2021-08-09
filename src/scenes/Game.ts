@@ -278,9 +278,8 @@ export class Game extends Phaser.Scene {
 		// pick a random node
 
 		let minimum = 0;
-		if (this.score > 1) minimum = 1;
-		if (this.score > MAX_SCORE * 0.5) minimum = 2;
-		if (this.score > MAX_SCORE * 0.75) minimum = 3;
+		if (this.score > MAX_SCORE * 0.5) minimum = 1;
+		if (this.score > MAX_SCORE * 0.8) minimum = 2;
 
 		do {
 			const cell = this.grid.randomCell();
