@@ -3,9 +3,7 @@ import Phaser from 'phaser';
 import { TESSELATIONS } from './tesselate';
 import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
 import { SCALE } from './constants.js';
-
-// TODO: move to utility lib
-type Point = { x: number, y: number };
+import { centerOfMass, Point } from './util/geometry';
 
 export type Tile = {
 	resKey: string,
@@ -27,14 +25,6 @@ export function initTiles(scene) {
 			createTile(scene, tesselation, i);
 		}
 	}
-}
-
-// TODO: move to utility lib
-function centerOfMass(points : Point[]) : Point {
-	return {
-		x : points.reduce((prev, cur) => prev + cur.x, 0) / points.length,
-		y : points.reduce((prev, cur) => prev + cur.y, 0) / points.length
-	};
 }
 
 function boundingBox(points : Point[]) {

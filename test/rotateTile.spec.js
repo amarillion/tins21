@@ -1,6 +1,6 @@
-import { getRotationUnits, rotateMaskLeft, rotateMaskRight } from "../src/tileUtil";
+import { getRotationUnits, rotateMaskLeft, rotateMaskRight } from '../src/tileUtil';
 
-test("mask rotation left", () => {
+test('mask rotation left', () => {
 
 	expect (rotateMaskLeft(1, 0, 4)).toEqual(1);
 	expect (rotateMaskLeft(1, 1, 4)).toEqual(2);
@@ -22,7 +22,7 @@ test("mask rotation left", () => {
 
 });
 
-test("mask rotation right", () => {
+test('mask rotation right', () => {
 
 	expect (rotateMaskRight(1, 0, 4)).toEqual(1);
 	expect (rotateMaskRight(1, 1, 4)).toEqual(8);
@@ -44,7 +44,7 @@ test("mask rotation right", () => {
 
 });
 
-test("rounding angles to units", () => {
+test('rounding angles to units', () => {
 
 	expect (getRotationUnits(-2 * Math.PI, 4)).toBe(0);
 	expect (getRotationUnits(-0.5 * Math.PI, 4)).toBe(3);
@@ -61,4 +61,4 @@ test("rounding angles to units", () => {
 	expect (getRotationUnits(2.0 * Math.PI, 4)).toBe(0);
 	expect (getRotationUnits(2.2 * Math.PI, 4)).toBe(0);
 
-})
+});
