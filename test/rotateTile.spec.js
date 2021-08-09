@@ -47,6 +47,7 @@ test("mask rotation right", () => {
 test("rounding angles to units", () => {
 
 	expect (getRotationUnits(-2 * Math.PI, 4)).toBe(0);
+	expect (getRotationUnits(-0.5 * Math.PI, 4)).toBe(3);
 	expect (getRotationUnits(-0.2 * Math.PI, 4)).toBe(0);
 	expect (getRotationUnits(0.2 * Math.PI, 4)).toBe(0);
 	expect (getRotationUnits(0.4 * Math.PI, 4)).toBe(1);

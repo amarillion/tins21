@@ -58,7 +58,15 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 			this.stepsRemain = STEPS;
 			this.nextNode = this.determineNextNode();
 			this.halfwayCheckpoint = false;
+
+			if (!this.nextNode) {
+				this.destroy();
+				console.log('determineNextNode returned nothing', this);
+				return;
+			}
+	
 		}
+
 
 		const deltax = this.nextNode.cx - this.node.cx;
 		const deltay = this.nextNode.cy - this.node.cy;

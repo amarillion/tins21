@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Tile } from '../tiles';
 import { Game } from '../scenes/Game';
 import { Point } from '../util/geometry';
-import { getRotationUnits, rotateMaskRight } from '../tileUtil';
+import { getRotationUnits, rotateMaskLeft } from '../tileUtil';
 
 export default class extends Phaser.GameObjects.Sprite {
 	
@@ -52,7 +52,7 @@ export default class extends Phaser.GameObjects.Sprite {
 			// round rotation to nearest unit angle...
 			const sides = this.scene.tesselation.sides; //TODO: depends on tesselation
 			const rotationStep = getRotationUnits(this.rotation, sides);
-			const connectionMask = rotateMaskRight(scene.nextTile.connectionMask, rotationStep, sides);
+			const connectionMask = rotateMaskLeft(scene.nextTile.connectionMask, rotationStep, sides);
 			
 			// find rotated tile...
 			scene.setTile(node, scene.tileSet[connectionMask]);

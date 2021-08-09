@@ -36,6 +36,6 @@ export function getRotationUnits(rotation: number, sides: number) {
 	const PI_2 = Math.PI * 2;
 	const unit = PI_2 / sides;
 	while(normalized < 0) { normalized += PI_2; }
-	const result = Math.round(rotation / unit) % sides;
-	return Math.abs(result); // get rid of -0
+	const result = Math.round(normalized / unit) % sides;
+	return result;
 }
