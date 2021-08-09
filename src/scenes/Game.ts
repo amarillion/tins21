@@ -255,7 +255,7 @@ export class Game extends Phaser.Scene {
 		console.log(`{ dx: ${node.mx - 1}, dy: ${node.my - 1}, idx: ${node.idx} },`);
 	}
 
-	addMonster() {
+	addMob() {
 		if (this.uiBlocked) { return; }
 
 		const config = {
@@ -266,19 +266,22 @@ export class Game extends Phaser.Scene {
 		this.spriteLayer.add(sprite);
 		
 		
-		if (Math.random() > 0.5) {
-			
-			// pick a random node
-			const cell = this.grid.randomCell();
-			const node = pickOne(cell.nodes);
+		
+		this.spawnFluff();
+	}
 
-			//TODO: instead - pick a random node that doesn't have a tile, and look for an adjacent one that does
-			if (node.tile) {
-				const sprite2 = new Fluff({scene: this, node});
-				this.spriteLayer.add(sprite2);
-			}
+	spawnFluff() {
+		// if (Math.random() > 0.5) {
+		// pick a random node
+		const cell = this.grid.randomCell();
+		const node = pickOne(cell.nodes);
+
+		//TODO: instead - pick a random node that doesn't have a tile, and look for an adjacent one that does
+		if (node.tile) {
+			const sprite2 = new Fluff({scene: this, node});
+			this.spriteLayer.add(sprite2);
 		}
-
+		// }
 	}
 
 	findNodeAt(xco, yco) {
@@ -309,6 +312,8 @@ export class Game extends Phaser.Scene {
 		const img = node.tileImg as Phaser.GameObjects.Image;
 		const tile = node.tile;
 		
+		if (!tile || !img) return; // already destroyed by something else....
+
 		// re-center on the center of mass instead of the pivot
 		img.setPosition(
 			node.xco - tile.origin.x + tile.center.x, 
@@ -361,7 +366,7 @@ export class Game extends Phaser.Scene {
 		this.uiBlocked = false;
 		initTiles(this);
 
-		this.time.addEvent({ delay: 1000, callback: () => this.addMonster(), loop: true });
+		this.time.addEvent({ delay: 1000, callback: () => this.addMob(), loop: true });
 	
 		this.initLevel();
 		

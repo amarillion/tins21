@@ -7,6 +7,7 @@ const STEPS = 40;
 
 export class Fluff extends MapSprite {
 	
+
 	constructor ({ scene, node }) {
 		super({ scene, node, asset: 'fluff-spritesheet' });
 		this.play('fluff');
@@ -23,6 +24,18 @@ export class Fluff extends MapSprite {
 	}
 
 	determineNextAction() : ActionType {
+		if (this.node !== this.scene.endNode && 
+			this.node !== this.scene.startNode && 
+			Math.random() > 0.8) {
+			return {
+				type: 'SHAKE',
+				time: STEPS * 3,
+				onComplete: () => {
+					this.scene.destroyTile(this.node);
+					this.destroy();
+				}
+			};
+		}
 		if (this.actionCounter % 2 === 1) {
 			return {
 				type: 'MOVE',

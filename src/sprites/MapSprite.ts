@@ -6,8 +6,9 @@ import { Game } from '../scenes/Game';
 const STEPS = 40;
 
 export type ActionType = {
-	type: 'MOVE' | 'SIT';
-	time: number
+	type: 'MOVE' | 'SIT' | 'SHAKE';
+	time: number;
+	onComplete?: () => void
 }
 
 export class MapSprite extends Phaser.GameObjects.Sprite {
@@ -87,15 +88,17 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 			this.prevNode = this.node;
 			this.node = this.nextNode;
 			this.nextNode = null;
-			this.action = null;
 			this.onNodeReached();
+		}
+		if ('onComplete' in this.action) {
+			this.action.onComplete();
 		}
 	}
 
 	determineNextAction() : ActionType {
 		return {
 			type : 'SIT',
-			time : STEPS, 
+			time : STEPS,
 		};
 	}
 
@@ -105,12 +108,17 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 		if (!this.action) {
 			this.action = this.determineNextAction();
 			this.actionCounter++;
-			console.log('New action', this, this.action);
+			// console.log('New action', this, this.action);
 			this.stepsRemain = this.action.time;
 		}
 
 		if (this.action.type === 'MOVE') {
 			this.followPath();
+		}
+
+		if (this.action.type === 'SHAKE') {
+			this.x = this.node.cx + 4 * Math.sin(this.stepsRemain * 13);
+			this.y = this.node.cy + 4 * Math.cos(this.stepsRemain * 17);
 		}
 
 		this.stepsRemain--;
