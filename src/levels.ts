@@ -51,9 +51,9 @@ It reminds me of someone...
 		</p><p>
 		How did our two heroes got into this mess?
 		Play <a href="https://tins.amarillion.org/entry/205/">Fole and Raul go Flower Power</a>, and find out!</p>`,
-		tesselation: TESSELATIONS.DIAMOND.name
-	}, { // 4
 		tesselation: TESSELATIONS.CAIRO.name,
+	}, { // 4
+		tesselation: TESSELATIONS.DIAMOND.name,
 		dialog: `<h2>SHAMELESS PLUG</h2>
 		<p>Did you enjoy TINS?</p>
 		<p>

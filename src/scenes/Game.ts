@@ -277,6 +277,11 @@ export class Game extends Phaser.Scene {
 		// if (Math.random() > 0.5) {
 		// pick a random node
 
+		let minimum = 0;
+		if (this.score > 1) minimum = 1;
+		if (this.score > MAX_SCORE * 0.5) minimum = 2;
+		if (this.score > MAX_SCORE * 0.75) minimum = 3;
+
 		do {
 			const cell = this.grid.randomCell();
 			const node = pickOne(cell.nodes);
@@ -290,7 +295,7 @@ export class Game extends Phaser.Scene {
 			}
 			// }
 		}
-		while (this.fluffs.children.size === 0);
+		while (this.fluffs.children.size < minimum);
 	}
 
 	findNodeAt(xco, yco) {
