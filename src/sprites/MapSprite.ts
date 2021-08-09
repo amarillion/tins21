@@ -93,7 +93,7 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 
 	followPath() {
 		if (!this.path) {
-			this.stepsRemain = STEPS;
+			this.stepsRemain = this.action.time;
 			
 			const nextNode = this.determineNextNode();
 			if (!nextNode) {
@@ -108,13 +108,13 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 			this.halfwayCheckpoint = false;
 		}
 
-		this.path.fraction = 1 - (this.stepsRemain / STEPS);
+		this.path.fraction = 1 - (this.stepsRemain / this.action.time);
 		
 		const pos = this.path.getPos();
 		
 		this.x = pos.x; this.y = pos.y;
 		
-		if (!this.halfwayCheckpoint && this.stepsRemain < (STEPS / 2)) {
+		if (!this.halfwayCheckpoint && this.path.fraction > 0.5) {
 			this.onHalfWay();
 			this.halfwayCheckpoint = true;
 		}

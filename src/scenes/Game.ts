@@ -151,15 +151,15 @@ export class Game extends Phaser.Scene {
 		this.uiLayer.add(control);
 
 		const rotateButton1 = new Phaser.GameObjects.Text(this, 
-			SCREENW - CONTROL_SIZE + 20, CONTROL_SIZE, 
-			'L', { backgroundColor: '#00f', color: '#fff' }
+			SCREENW - CONTROL_SIZE, CONTROL_SIZE, 
+			'[L]', { backgroundColor: '#00f', color: '#fff', fontSize: '2rem' }
 		);
 		rotateButton1.setInteractive().on('pointerdown', () => this.onRotateLeft() );
 		this.uiLayer.add(rotateButton1);
 
 		const rotateButton2 = new Phaser.GameObjects.Text(this, 
-			SCREENW - 20, CONTROL_SIZE, 
-			'R', { backgroundColor: '#00f', color: '#fff' }
+			SCREENW - 60, CONTROL_SIZE, 
+			'[R]', { backgroundColor: '#00f', color: '#fff', fontSize: '2rem' }
 		);
 		rotateButton2.setInteractive().on('pointerdown', () => this.onRotateRight() );
 		this.uiLayer.add(rotateButton2);
@@ -433,7 +433,10 @@ export class Game extends Phaser.Scene {
 		// Phaser annoyance: children is Phasers own Set type that can not be iterated...
 		for (const f of this.fluffs.children.getArray()) {
 			const fluff = f as Fluff;
-			if (fluff.getBounds().contains(pointer.x, pointer.y)) {
+			const center = fluff.getCenter();
+			const dx = pointer.x - center.x;
+			const dy = pointer.y - center.y;
+			if (Math.abs(dx) < 64 && Math.abs(dy) < 64) {
 				this.dragTarget = fluff;
 				this.dragTarget.dragStart(pointer);
 				return;
