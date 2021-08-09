@@ -134,10 +134,12 @@ export class Game extends Phaser.Scene {
 	}
 
 	onRotateLeft() {
+		if (this.uiBlocked) { return; }
 		if (this.draggableTile) this.draggableTile.rotateLeft();
 	}
 
 	onRotateRight() {
+		if (this.uiBlocked) { return; }
 		if (this.draggableTile) this.draggableTile.rotateRight();
 	}
 
@@ -214,6 +216,13 @@ export class Game extends Phaser.Scene {
 		assert(this.startNode !== null);
 		assert(this.endNode !== null);
 
+		if (levelData.dialog) {
+			this.uiBlocked = true;
+			openDialog(levelData.dialog, () => {
+				this.uiBlocked = false;
+			});
+		}
+
 	}
 
 	endReached() {
@@ -221,12 +230,15 @@ export class Game extends Phaser.Scene {
 		this.progressbar.refresh(this.score, MAX_SCORE);
 
 		if (this.score === MAX_SCORE) {
-			openDialog('<h1>You won this level!</h1>', () => {
-				this.uiBlocked = false;
+			const text = new Phaser.GameObjects.Text(this, 
+				SCREENW / 2, SCREENH / 2, 'LEVEL COMPLETE', { color: 'black', align: 'center' }
+			);
+			this.uiLayer.add(text);
+			setTimeout(() => {
 				this.level++;
 				this.initLevel();
-			});
-			this.uiBlocked = true;
+				text.destroy();
+			}, 3000);
 		}
 	}
 
@@ -244,6 +256,8 @@ export class Game extends Phaser.Scene {
 	}
 
 	addMonster() {
+		if (this.uiBlocked) { return; }
+
 		const config = {
 			scene: this,
 			node: this.startNode,
@@ -349,6 +363,8 @@ export class Game extends Phaser.Scene {
 	dragTarget : DraggableTile;
 
 	onDown(pointer) {
+		if (this.uiBlocked) { return; }
+
 		/**
 		 * Phaser annoyance: the geom of an ellipse object does not have the translation information
 		 *  needed to convert to screen coordinates.
@@ -366,12 +382,16 @@ export class Game extends Phaser.Scene {
 	}
 
 	onMove(pointer) {
+		if (this.uiBlocked) { return; }
+
 		if (this.dragTarget) {
 			this.dragTarget.dragMove(pointer);
 		}
 	}
 
 	onRelease(pointer) {
+		if (this.uiBlocked) { return; }
+
 		if (!this.dragTarget) return;
 
 		this.dragTarget.dragRelease(pointer);
