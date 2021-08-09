@@ -4,6 +4,12 @@ import { Game } from '../scenes/Game';
 import { Point } from '../util/geometry';
 import { getRotationUnits, rotateMaskLeft } from '../tileUtil';
 
+export interface Draggable {
+	dragRelease: ( pointer: Point ) => void,
+	dragStart: ( pointer: Point ) => void,
+	dragMove: ( pointer: Point ) => void
+}
+
 export default class extends Phaser.GameObjects.Sprite {
 	
 	scene: Game;

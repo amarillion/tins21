@@ -2,6 +2,7 @@ import { Stream } from '@amarillion/helixgraph/lib/iterableUtils.js';
 import { pickOne } from '@amarillion/helixgraph/lib/random.js';
 import { ActionType, MapSprite } from './MapSprite';
 import { Node } from '../grid';
+import { Point } from '../util/geometry';
 
 const STEPS = 40;
 
@@ -80,6 +81,33 @@ export class Fluff extends MapSprite {
 				this.scene.destroyTile(this.path.dest);
 				this.destroy(); // TODO: animate...
 			}
+		}
+	}
+
+	dragStart() {
+		this.action = {
+			type: 'SIT',
+			time: Infinity
+		};
+	}
+
+	dragMove(pointer : Point) {
+		this.x = pointer.x;
+		this.y = pointer.y;
+	}
+
+	dragRelease(pointer: Point) {
+		const destNode = this.scene.findNodeAt(pointer.x, pointer.y);
+		if (!(destNode && destNode.tile)) {
+			this.destroy();
+		}
+		else {
+			// drop bunny on tile
+			this.node = destNode;
+			this.path = null;
+			this.action = null;
+			this.x = destNode.cx;
+			this.y = destNode.cy;
 		}
 	}
 

@@ -11,7 +11,7 @@ import { TESSELATIONS, TesselationType } from '../tesselate';
 import { TILES, initTiles, Tile } from '../tiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
 import { ProgressBar } from '../sprites/progress-bar';
-import DraggableTile from '../sprites/DraggableTile';
+import DraggableTile, { Draggable } from '../sprites/DraggableTile';
 import { openDialog } from '../components/Dialog';
 import { LEVELDATA } from '../levels';
 
@@ -103,6 +103,7 @@ export class Game extends Phaser.Scene {
 	bgLayer: Phaser.GameObjects.Layer;
 	tileLayer: Phaser.GameObjects.Layer;
 	uiLayer: Phaser.GameObjects.Layer;
+	fluffs: Phaser.GameObjects.Group;
 
 	score: number;
 	level: number;
@@ -197,6 +198,8 @@ export class Game extends Phaser.Scene {
 		this.uiLayer = this.add.layer();
 		this.uiLayer.setDepth(3);
 		
+		this.fluffs = this.add.group();
+
 		this.score = 0;
 		const levelData = LEVELDATA[this.level % LEVELDATA.length];
 		this.tesselation = TESSELATIONS[levelData.tesselation];
@@ -273,15 +276,21 @@ export class Game extends Phaser.Scene {
 	spawnFluff() {
 		// if (Math.random() > 0.5) {
 		// pick a random node
-		const cell = this.grid.randomCell();
-		const node = pickOne(cell.nodes);
 
-		//TODO: instead - pick a random node that doesn't have a tile, and look for an adjacent one that does
-		if (node.tile) {
-			const sprite2 = new Fluff({scene: this, node});
-			this.spriteLayer.add(sprite2);
+		do {
+			const cell = this.grid.randomCell();
+			const node = pickOne(cell.nodes);
+
+			//TODO: instead - pick a random node that doesn't have a tile, and look for an adjacent one that does
+			if (node.tile) {
+				const sprite = new Fluff({scene: this, node});
+				this.spriteLayer.add(sprite);
+				this.fluffs.add(sprite);
+				console.log('Added fluff', this.fluffs.children.size);
+			}
+			// }
 		}
-		// }
+		while (this.fluffs.children.size === 0);
 	}
 
 	findNodeAt(xco, yco) {
@@ -392,7 +401,7 @@ export class Game extends Phaser.Scene {
 		music.play();
 	}
 
-	dragTarget : DraggableTile;
+	dragTarget : Draggable;
 
 	onDown(pointer) {
 		if (this.uiBlocked) { return; }
@@ -403,13 +412,29 @@ export class Game extends Phaser.Scene {
 		 * 
 		 * Therefore there is no straightforward way to check if an ellipse object overlaps with the mouse pointer -
 		 * you need to do an error-prone translation first
+		 * 
+		 * // TODO: maybe GameObject.getLocalPoint() works better
 		 */
 		const xx = pointer.x - this.control.x + this.control.displayOriginX;
 		const yy = pointer.y - this.control.y + this.control.displayOriginY;
+
 		const contains = Phaser.Geom.Ellipse.Contains(this.control.geom, xx, yy);
 		if (contains) {
 			this.dragTarget = this.draggableTile;
 			this.dragTarget.dragStart(pointer);
+			return;
+		}
+
+		// else check for fluffs to drag...
+		// Phaser annoyance: children is Phasers own Set type that can not be iterated...
+		for (const f of this.fluffs.children.getArray()) {
+			const fluff = f as Fluff;
+			if (fluff.getBounds().contains(pointer.x, pointer.y)) {
+				this.dragTarget = fluff;
+				this.dragTarget.dragStart(pointer);
+				return;
+			}
+
 		}
 	}
 
