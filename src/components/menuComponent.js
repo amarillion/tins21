@@ -44,10 +44,11 @@ export class MenuComponent extends HTMLElement {
 				left: 30%;
 				top: 20%;
 			}
-			canvas {
+			.qrwrapper {
 				position: absolute;
 				right: 1rem;
 				top: 1rem;
+				text-align: center;
 			}
 			.buttonBar {
 				display: flex;
@@ -61,7 +62,10 @@ export class MenuComponent extends HTMLElement {
 				<button id="fullScreen">Full Screen</button>
 			</div>
 		</div>
-		<canvas id="qrcanvas"></canvas>
+		<div class="qrwrapper">
+			<small>play on mobile!</small><br>
+			<canvas id="qrcanvas"></canvas>
+		</div>
 	`;
 	}
 
