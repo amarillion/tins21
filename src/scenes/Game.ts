@@ -309,6 +309,9 @@ export class Game extends Phaser.Scene {
 	}
 
 	destroyTile(node: Node) {
+		// can't destroy start or end!
+		if (node === this.startNode || node === this.endNode) return;
+
 		const img = node.tileImg as Phaser.GameObjects.Image;
 		const tile = node.tile;
 		

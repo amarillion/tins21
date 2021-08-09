@@ -24,18 +24,31 @@ export class Fluff extends MapSprite {
 	}
 
 	determineNextAction() : ActionType {
-		if (this.node !== this.scene.endNode && 
-			this.node !== this.scene.startNode && 
-			Math.random() > 0.8) {
+		// die of old age...
+		if (this.actionCounter > 50) {
 			return {
-				type: 'SHAKE',
-				time: STEPS * 3,
+				type: 'SIT',
+				time: STEPS,
 				onComplete: () => {
-					this.scene.destroyTile(this.node);
 					this.destroy();
 				}
 			};
 		}
+		
+		const explodeChance = Math.min(0.5, this.actionCounter / 20);
+		if (Math.random() < explodeChance) {
+			if (this.node !== this.scene.startNode && this.node !== this.scene.endNode) {
+				return {
+					type: 'SHAKE',
+					time: STEPS * 3,
+					onComplete: () => {
+						this.scene.destroyTile(this.node);
+						this.destroy();
+					}
+				};
+			}
+		}
+
 		if (this.actionCounter % 2 === 1) {
 			return {
 				type: 'MOVE',
@@ -52,20 +65,19 @@ export class Fluff extends MapSprite {
 	}
 
 	onHalfWay() {
-		if (!this.nextNode.tile) {
-			[this.node, this.nextNode] = [this.nextNode, this.node];
+		if (!this.path.hasDestTile()) {
+			this.path.reverse();
 			return;
 		}
 
-		const reversePath = Stream.of(Node.getExits(this.nextNode)).map(v => v[1]).find(n => n === this.node);
-		if (!reversePath) {
+		if (!this.path.hasDestExit()) {
 			// we can't go further. 
 			// Two options: return or destroy...
 			if (Math.random() > 0.5) {
-				[this.node, this.nextNode] = [this.nextNode, this.node];
+				this.path.reverse();
 			}
 			else {
-				this.scene.destroyTile(this.nextNode);
+				this.scene.destroyTile(this.path.dest);
 				this.destroy(); // TODO: animate...
 			}
 		}

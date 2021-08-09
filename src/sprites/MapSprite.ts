@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Node } from '../grid';
 import { Stream } from '@amarillion/helixgraph/lib/iterableUtils.js';
 import { Game } from '../scenes/Game';
+import { Point } from '../util/geometry';
 
 const STEPS = 40;
 
@@ -11,28 +12,63 @@ export type ActionType = {
 	onComplete?: () => void
 }
 
+class Path {
+	src: Node;
+	dest: Node;
+	fraction: number;
+	
+	constructor(src, dest) {
+		this.src = src;
+		this.dest = dest;
+		this.fraction = 0;
+	}
+
+	getPos() : Point {
+		const deltax = this.dest.cx - this.src.cx;
+		const deltay = this.dest.cy - this.src.cy;
+
+		return {
+			x: this.src.cx + this.fraction * deltax,
+			y: this.src.cy + this.fraction * deltay
+		};
+	}
+
+	reverse() {
+		this.fraction = 1 - this.fraction;
+		[ this.src, this.dest ] = [ this.dest, this.src ];
+	}
+
+	hasDestTile() {
+		return !!this.dest.tile;
+	}
+
+	hasDestExit() {
+		if (!this.hasDestTile()) return false;
+		const reversePath = Stream.of(Node.getExits(this.dest)).map(v => v[1]).find(n => n === this.src);
+		return !!reversePath;
+	}
+}
+
 export class MapSprite extends Phaser.GameObjects.Sprite {
 	
 	node: Node;
 	stepsRemain: number;
-	nextNode: Node;
 	prevNode: Node;
 	halfwayCheckpoint: boolean;
 	solution: Node[];
-	followingPath: boolean;
 	action: ActionType;
-	scene: Game
-	actionCounter: number
+	scene: Game;
+	actionCounter: number;
+	path: Path;
 
 	constructor ({ scene, node, asset }) {
 		super(scene, node.cx, node.cy, asset);
 		
 		this.node = node;
 		this.stepsRemain = 0;
-		this.nextNode = null;
+		this.path = null;
 		this.prevNode = null;
 		this.halfwayCheckpoint = false;
-		this.followingPath = true;
 		this.actionCounter = 0;
 	}
 
@@ -41,14 +77,13 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 	}
 
 	onHalfWay() {
-		if (!this.nextNode.tile) {
+		if (!this.path.hasDestTile()) {
 			this.destroy();
 		}
 
-		const reversePath = Stream.of(Node.getExits(this.nextNode)).map(v => v[1]).find(n => n === this.node);
-		if (!reversePath) {
+		if (!this.path.hasDestExit()) {
 			// we can't go further. Go back along the same path.
-			[this.node, this.nextNode] = [this.nextNode, this.node];
+			this.path.reverse();
 		}
 	}
 
@@ -57,25 +92,27 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 	}
 
 	followPath() {
-		if (!this.nextNode) {
+		if (!this.path) {
 			this.stepsRemain = STEPS;
-			this.nextNode = this.determineNextNode();
-			this.halfwayCheckpoint = false;
-
-			if (!this.nextNode) {
+			
+			const nextNode = this.determineNextNode();
+			if (!nextNode) {
 				this.action = {
 					type: 'SIT',
 					time: STEPS
 				};
 				return;
 			}
+
+			this.path = new Path(this.node, nextNode);
+			this.halfwayCheckpoint = false;
 		}
 
-		const deltax = this.nextNode.cx - this.node.cx;
-		const deltay = this.nextNode.cy - this.node.cy;
-
-		this.x = this.nextNode.cx - this.stepsRemain * (deltax / STEPS);
-		this.y = this.nextNode.cy - this.stepsRemain * (deltay / STEPS);
+		this.path.fraction = 1 - (this.stepsRemain / STEPS);
+		
+		const pos = this.path.getPos();
+		
+		this.x = pos.x; this.y = pos.y;
 		
 		if (!this.halfwayCheckpoint && this.stepsRemain < (STEPS / 2)) {
 			this.onHalfWay();
@@ -86,8 +123,8 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 	completeAction() {
 		if (this.action.type === 'MOVE') {
 			this.prevNode = this.node;
-			this.node = this.nextNode;
-			this.nextNode = null;
+			this.node = this.path.dest;
+			this.path = null;
 			this.onNodeReached();
 		}
 		if ('onComplete' in this.action) {
