@@ -21,6 +21,7 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 	followingPath: boolean;
 	action: ActionType;
 	scene: Game
+	actionCounter: number
 
 	constructor ({ scene, node, asset }) {
 		super(scene, node.cx, node.cy, asset);
@@ -31,6 +32,7 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 		this.prevNode = null;
 		this.halfwayCheckpoint = false;
 		this.followingPath = true;
+		this.actionCounter = 0;
 	}
 
 	determineNextNode() : Node {
@@ -102,6 +104,7 @@ export class MapSprite extends Phaser.GameObjects.Sprite {
 
 		if (!this.action) {
 			this.action = this.determineNextAction();
+			this.actionCounter++;
 			console.log('New action', this, this.action);
 			this.stepsRemain = this.action.time;
 		}

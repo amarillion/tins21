@@ -305,6 +305,30 @@ export class Game extends Phaser.Scene {
 		this.checkPath();
 	}
 
+	destroyTile(node: Node) {
+		const img = node.tileImg as Phaser.GameObjects.Image;
+		const tile = node.tile;
+		
+		// re-center on the center of mass instead of the pivot
+		img.setPosition(
+			node.xco - tile.origin.x + tile.center.x, 
+			node.yco - tile.origin.y + tile.center.y
+		);
+		img.setDisplayOrigin(tile.center.x, tile.center.y);
+
+		
+		this.tweens.add({
+			targets: [ img ],
+			duration: 1000,
+			rotation: Math.PI,
+			scale: 0,
+			onComplete: () => img.destroy()
+		});
+
+		node.tile = null;
+		node.tileImg = null;
+	}
+
 	checkPath() {
 		const prev = breadthFirstSearch(this.startNode, this.endNode, Node.getAdjacent);
 		this.solution = trackbackNodes(this.startNode, this.endNode, prev);
