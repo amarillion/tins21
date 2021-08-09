@@ -74,12 +74,22 @@ export class Fluff extends MapSprite {
 		if (!this.path.hasDestExit()) {
 			// we can't go further. 
 			// Two options: return or destroy...
-			if (Math.random() > 0.5) {
+			if (this.node === this.scene.startNode ||
+				this.node === this.scene.endNode ||
+				Math.random() > 0.5) {
 				this.path.reverse();
 			}
 			else {
-				this.scene.destroyTile(this.path.dest);
-				this.destroy(); // TODO: animate...
+				// TODO: causes sudden jump in coordinate
+				this.stepsRemain = STEPS * 3;
+				this.action = {
+					type: 'SHAKE',
+					time: STEPS * 3,
+					onComplete: () => {
+						this.scene.destroyTile(this.node);
+						this.destroy();
+					}
+				};
 			}
 		}
 	}

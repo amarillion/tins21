@@ -152,14 +152,14 @@ export class Game extends Phaser.Scene {
 
 		const rotateButton1 = new Phaser.GameObjects.Text(this, 
 			SCREENW - CONTROL_SIZE, CONTROL_SIZE, 
-			'[L]', { backgroundColor: '#00f', color: '#fff', fontSize: '2rem' }
+			'[L]', { backgroundColor: '#00f', color: '#fff', fontSize: '32px' }
 		);
 		rotateButton1.setInteractive().on('pointerdown', () => this.onRotateLeft() );
 		this.uiLayer.add(rotateButton1);
 
 		const rotateButton2 = new Phaser.GameObjects.Text(this, 
 			SCREENW - 60, CONTROL_SIZE, 
-			'[R]', { backgroundColor: '#00f', color: '#fff', fontSize: '2rem' }
+			'[R]', { backgroundColor: '#00f', color: '#fff', fontSize: '32px' }
 		);
 		rotateButton2.setInteractive().on('pointerdown', () => this.onRotateRight() );
 		this.uiLayer.add(rotateButton2);
