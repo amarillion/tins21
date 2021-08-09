@@ -123,12 +123,13 @@ export class Game extends Phaser.Scene {
 	initGates() {
 		this.startNode = this.findNodeAt(150, 150);
 		this.setTile(this.startNode, this.tileSet[this.tileSet.length - 1]);
-		const c1 = new Phaser.GameObjects.Ellipse(this, this.startNode.cx, this.startNode.cy, 10, 10, 0xFF0000, 1.0);
+		
+		const c1 = new Phaser.GameObjects.Sprite(this, this.startNode.cx, this.startNode.cy, 'startgate');
 		this.spriteLayer.add(c1);
 
 		this.endNode = this.findNodeAt(SCREENW - 150, SCREENH - 150);
 		this.setTile(this.endNode, this.tileSet[this.tileSet.length - 1]);
-		const c2 = new Phaser.GameObjects.Ellipse(this, this.endNode.cx, this.endNode.cy, 10, 10, 0x00FF00, 1.0);
+		const c2 = new Phaser.GameObjects.Sprite(this, this.endNode.cx, this.endNode.cy, 'endgate');
 		this.spriteLayer.add(c2);
 	}
 
