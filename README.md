@@ -8,11 +8,11 @@ https://tins.amarillion.org/entry/228/
 
 # Play online
 
-You can play this game online by opening:
-
-https://github.com/amarillion/tins21/dist
+Open this link to [play online](https://amarillion.github.io/tins21/) (latest version)
 
 (Use the QR code in the title screen to play on your iPad or cell phone)
+
+The link above has some improvements since the original. For the curious, you can still play [older versions](https://amarillion.github.io/tins21/dist/).
 
 # How to play
 
