@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import { TESSELATIONS } from './tesselate';
+import { TESSELATIONS, TesselationType } from './tesselate';
 import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
 import { SCALE } from './constants.js';
 import { centerOfMass, Point } from './util/geometry';
@@ -66,7 +66,7 @@ function createTile(scene, tesselation, connectionMask) {
 	};
 }
 
-function renderTile(graphics, ox, oy, tesselation, connectionMask, fillColor, outlineColor, pathColor) {
+function renderTile(graphics, ox, oy, tesselation : TesselationType, connectionMask, fillColor, outlineColor, pathColor) {
 	const { points, links, primitiveUnit, unitSize } = tesselation;
 	const cc = centerOfMass(points);
 	
@@ -75,10 +75,8 @@ function renderTile(graphics, ox, oy, tesselation, connectionMask, fillColor, ou
 		scale(SCALE, SCALE),
 	);
 
-	// transformation-matrix annoyance: type definition does not account for the fact that output type is the same as input type
-	// this makes it impossible to pass the result to Phaser.Geom.Polygon without typecast.
 	const tPoints = applyToPoints(srcMatrix, points); 
-	const polygon = new Phaser.Geom.Polygon(tPoints as Phaser.Types.Math.Vector2Like[]);
+	const polygon = new Phaser.Geom.Polygon(tPoints);
 
 	graphics.fillStyle(fillColor);
 	graphics.fillPoints(polygon.points, true);
