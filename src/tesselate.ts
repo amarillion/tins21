@@ -7,7 +7,7 @@ export type TesselationType = {
 	points: Array<{x: number, y: number}>;
 	primitiveUnit: Array<PrimitiveUnitPart>;
 	name: string;
-	unitSize: number[];
+	unitSize: [number, number];
 	links: Array<Array<{ dx: number, dy: number, idx: number }>>
 	sides: number;
 };
@@ -24,7 +24,6 @@ function getTriangleTesselation() : TesselationType  {
 		{ x: -1, y: 2*SIN60, rotation: 0 },
 		{ x: 2,  y: 4*SIN60, rotation: PI }
 	];
-	const unitSize = [ 2, 4 * SIN60 ];
 	const links = [
 		[
 			{ dx: 0, dy: -1, idx: 3 },
@@ -47,7 +46,7 @@ function getTriangleTesselation() : TesselationType  {
 	return {
 		points,
 		primitiveUnit,
-		unitSize,
+		unitSize : [ 2, 4 * SIN60 ],
 		links,
 		name: 'TRIANGULAR',
 		sides: 3,
@@ -64,7 +63,6 @@ function getSquareTesselation() : TesselationType {
 	const primitiveUnit = [
 		{ x: 0, y: 0, rotation: 0 }
 	];
-	const unitSize = [ 1.5, 1.5 ];
 	const links = [
 		// first elt
 		[
@@ -77,7 +75,7 @@ function getSquareTesselation() : TesselationType {
 	return {
 		points,
 		primitiveUnit,
-		unitSize, 
+		unitSize : [ 1.5, 1.5 ], 
 		links,
 		name: 'SQUARE',
 		sides: 4,
@@ -97,7 +95,6 @@ function getHexagonalTesselation() : TesselationType  {
 		{ x: 0, y: 0, rotation: 0 },
 		{ x: -SIN60, y: 1.5, rotation: 0 },
 	];
-	const unitSize = [ 2*SIN60, 3 ];
 	const links = [
 		// first elt
 		[
@@ -121,7 +118,7 @@ function getHexagonalTesselation() : TesselationType  {
 	return {
 		points,
 		primitiveUnit,
-		unitSize,
+		unitSize : [ 2*SIN60, 3 ],
 		links,
 		name: 'HEXAGONAL',
 		sides: 6,
@@ -144,7 +141,6 @@ function getDiamondTesselation() : TesselationType {
 		{ x: SIN60,              y: 1.5, rotation: PI * 2 / 3 },
 		{ x: 0,                  y: 3, rotation: PI * 4 / 3 },
 	];
-	const unitSize = [ 2*SIN60, 3 ];
 	const links = [
 		[
 			{ dx: 0, dy: 0, idx: 1 },
@@ -181,7 +177,7 @@ function getDiamondTesselation() : TesselationType {
 	return {
 		points,
 		primitiveUnit,
-		unitSize,
+		unitSize : [ 2*SIN60, 3 ],
 		links,
 		name: 'DIAMOND',
 		sides: 4,
@@ -211,7 +207,6 @@ function getCairoTesselation(): TesselationType  {
 		{ x: 2*SIN60 + B,  y: 2 * SIN60 + H, rotation: PI*1.5 },
 	];
 
-	const unitSize = [ 4*SIN60, 4*SIN60 ];
 	const links = [
 		[ // 0
 			{ dx: 0, dy: -1, idx: 5 },
@@ -267,7 +262,7 @@ function getCairoTesselation(): TesselationType  {
 	return {
 		points,
 		primitiveUnit,
-		unitSize,
+		unitSize: [ 4*SIN60, 4*SIN60 ],
 		links,
 		name: 'CAIRO',
 		sides: 5,

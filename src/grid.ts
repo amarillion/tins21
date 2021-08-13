@@ -1,7 +1,7 @@
 import { TemplateGrid } from '@amarillion/helixgraph/lib/BaseGrid.js';
 import {scale, rotate, translate, transform, applyToPoints } from 'transformation-matrix';
 import { Tile } from './tiles';
-import { PrimitiveUnitPart } from './tesselate';
+import { PrimitiveUnitPart, TesselationType } from './tesselate';
 import { Point } from './util/geometry';
 
 export class Node {
@@ -21,7 +21,7 @@ export class Node {
 	tile: Tile;
 	tileImg: unknown;
 
-	constructor(mx, my, idx, xco, yco, element, points, SCALE) {
+	constructor(mx, my, idx, xco, yco, element, points : Point[], SCALE) {
 		this.mx = mx;
 		this.my = my;
 		this.idx = idx;
@@ -35,7 +35,7 @@ export class Node {
 			translate(element.x, element.y),
 			rotate(element.rotation),
 		);
-		this.points = applyToPoints(matrix, points) as Point[];
+		this.points = applyToPoints(matrix, points);
 		this.cx = this.points.reduce((prev, cur) => prev + cur.x, 0) / this.points.length;
 		this.cy = this.points.reduce((prev, cur) => prev + cur.y, 0) / this.points.length;
 		this.element = element;
@@ -95,7 +95,7 @@ export class Unit {
 		this.nodes.push(node);
 	}
 
-	addPrimitiveUnit(mx, my, secondX, secondY, tesselation, SCALE) {
+	addPrimitiveUnit(mx, my, secondX, secondY, tesselation : TesselationType, SCALE) {
 		const { primitiveUnit, unitSize, points } = tesselation;
 		let idx = 0;
 		for (const element of primitiveUnit) {
