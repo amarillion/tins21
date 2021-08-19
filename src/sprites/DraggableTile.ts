@@ -7,7 +7,8 @@ import { getRotationUnits, rotateMaskLeft } from '../tileUtil';
 export interface Draggable {
 	dragRelease: ( pointer: Point ) => void,
 	dragStart: ( pointer: Point ) => void,
-	dragMove: ( pointer: Point ) => void
+	dragMove: ( pointer: Point ) => void,
+	dragCancel: ( pointer: Point ) => void,
 }
 
 export default class extends Phaser.GameObjects.Sprite {
@@ -37,7 +38,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
 	dragMove(pointer : Point) {
 		this.x = pointer.x;
-		this.y = pointer.y;		
+		this.y = pointer.y;
 	}
 
 	rotateLeft() {
@@ -50,7 +51,17 @@ export default class extends Phaser.GameObjects.Sprite {
 		this.rotation += (Math.PI * 2 / sides);
 	}
 
-	dragRelease( pointer ) {
+	dragCancel() {
+		const scene = this.scene;
+		scene.tweens.add({
+			targets: [ this ],
+			duration: 200,
+			x: scene.control.x,
+			y: scene.control.y
+		});
+	}
+
+	dragRelease(/* pointer */) {
 		const scene = this.scene;
 		const node = scene.findNodeAt(this.x, this.y);
 		const dragSuccess = (node && !node.tile);
@@ -65,12 +76,7 @@ export default class extends Phaser.GameObjects.Sprite {
 			scene.updateNextTile();
 		}
 		else {
-			scene.tweens.add({
-				targets: [ this ],
-				duration: 200,
-				x: scene.control.x,
-				y: scene.control.y
-			});
+			this.dragCancel();
 		}
 	}
 }

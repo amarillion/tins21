@@ -109,7 +109,7 @@ export class Fluff extends MapSprite {
 	dragRelease(pointer: Point) {
 		const destNode = this.scene.findNodeAt(pointer.x, pointer.y);
 		if (!(destNode && destNode.tile)) {
-			this.destroy();
+			this.dragCancel();
 		}
 		else {
 			// drop bunny on tile
@@ -119,6 +119,10 @@ export class Fluff extends MapSprite {
 			this.x = destNode.cx;
 			this.y = destNode.cy;
 		}
+	}
+
+	dragCancel() {
+		this.destroy();
 	}
 
 }

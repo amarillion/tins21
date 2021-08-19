@@ -374,6 +374,7 @@ export class Game extends Phaser.Scene {
 		this.uiLayer.add(this.draggableTile);
 	}
 
+
 	create () {
 		this.addReusableAnimations();
 		
@@ -386,6 +387,7 @@ export class Game extends Phaser.Scene {
 	
 		this.initLevel();
 		
+		// Phaser annoyance: who thought of naming the event when a pointer enters the game screen 'gameover'???
 		this.input.on('pointerdown', (pointer) => {
 			/*
 			const node = this.findNodeAt(pointer.x, pointer.y);
@@ -449,8 +451,15 @@ export class Game extends Phaser.Scene {
 		if (this.uiBlocked) { return; }
 
 		if (this.dragTarget) {
-			this.dragTarget.dragMove(pointer);
+			if (pointer.isDown) {
+				this.dragTarget.dragMove(pointer);
+			}
+			else {
+				// we missed the onRelease event. This can happen if the mouse left the screen and returned...
+				this.dragTarget.dragCancel(pointer);
+			}
 		}
+		
 	}
 
 	onRelease(pointer) {
