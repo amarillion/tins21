@@ -71,6 +71,13 @@ export default class extends Phaser.GameObjects.Sprite {
 
 	dragRelease(/* pointer */) {
 		const scene = this.scene;
+		
+		if (scene.controlContains({ x: this.x, y: this.y })) {
+			// we've moved our shape back to the corner
+			this.dragCancel();
+			return;
+		}
+		
 		const node = scene.findNodeAt(this.x, this.y);
 		const dragSuccess = (node && !node.tile);
 		if (dragSuccess) {

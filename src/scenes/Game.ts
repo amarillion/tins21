@@ -14,6 +14,7 @@ import { ProgressBar } from '../sprites/progress-bar';
 import DraggableTile, { Draggable } from '../sprites/DraggableTile';
 import { openDialog } from '../components/Dialog';
 import { LEVELDATA } from '../levels';
+import { Point } from '../util/geometry';
 
 const CONTROL_SIZE = 120;
 const BAR_W = 100;
@@ -412,22 +413,25 @@ export class Game extends Phaser.Scene {
 
 	dragTarget : Draggable;
 
-	onDown(pointer) {
-		if (this.uiBlocked) { return; }
-
+	controlContains(pos : Point) {
 		/**
 		 * Phaser annoyance: the geom of an ellipse object does not have the translation information
 		 *  needed to convert to screen coordinates.
 		 * 
-		 * Therefore there is no straightforward way to check if an ellipse object overlaps with the mouse pointer -
-		 * you need to do an error-prone translation first
+		 * So we need to take an extra step to convert coordinate with getLocalPoint()
 		 * 
-		 * // TODO: maybe GameObject.getLocalPoint() works better
+		 * Why can't I call this.control.geom.Contains? Why so indirect via utility method?
+		 * This means there is no polymorphism possible here...
 		 */
-		const xx = pointer.x - this.control.x + this.control.displayOriginX;
-		const yy = pointer.y - this.control.y + this.control.displayOriginY;
+		const localPoint = this.control.getLocalPoint(pos.x, pos.y);
+		const result = Phaser.Geom.Ellipse.Contains(this.control.geom, localPoint.x, localPoint.y);
+		return result;
+	}
 
-		const contains = Phaser.Geom.Ellipse.Contains(this.control.geom, xx, yy);
+	onDown(pointer) {
+		if (this.uiBlocked) { return; }
+
+		const contains = this.controlContains(pointer);
 		if (contains) {
 			this.dragTarget = this.draggableTile;
 			this.dragTarget.dragStart(pointer);
