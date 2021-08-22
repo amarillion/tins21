@@ -387,7 +387,6 @@ export class Game extends Phaser.Scene {
 	
 		this.initLevel();
 		
-		// Phaser annoyance: who thought of naming the event when a pointer enters the game screen 'gameover'???
 		this.input.on('pointerdown', (pointer) => {
 			/*
 			const node = this.findNodeAt(pointer.x, pointer.y);
@@ -402,6 +401,10 @@ export class Game extends Phaser.Scene {
 		});
 		this.input.on('pointermove', (pointer) => this.onMove(pointer));
 		this.input.on('pointerup', (pointer) => this.onRelease(pointer));
+		
+		// Phaser annoyance: gameout is weird, gameover is weirder.
+		// Who thought of naming the event when a pointer enters the game screen 'gameover'???
+		this.input.on('gameout', () => this.onGameOut());
 
 		const music = this.sound.add('music', { loop: true });
 		music.play();
@@ -444,6 +447,14 @@ export class Game extends Phaser.Scene {
 				return;
 			}
 
+		}
+	}
+
+	onGameOut() {
+		if (this.uiBlocked) { return; }
+		if (this.dragTarget) {
+			// use negative coordinates to indicate out of screen
+			this.dragTarget.dragMove({x: -1, y: -1});
 		}
 	}
 

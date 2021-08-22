@@ -7,6 +7,7 @@ import { getRotationUnits, rotateMaskLeft } from '../tileUtil';
 export interface Draggable {
 	dragRelease: ( pointer: Point ) => void,
 	dragStart: ( pointer: Point ) => void,
+	/** Moving the mouse. If mouse moved outside of screen, x and y are negative.  */
 	dragMove: ( pointer: Point ) => void,
 	dragCancel: ( pointer: Point ) => void,
 }
@@ -37,8 +38,14 @@ export default class extends Phaser.GameObjects.Sprite {
 	}
 
 	dragMove(pointer : Point) {
-		this.x = pointer.x;
-		this.y = pointer.y;
+		if (pointer.x < 0) {
+			this.visible = false;
+		}
+		else {
+			this.visible = true;
+			this.x = pointer.x;
+			this.y = pointer.y;
+		}
 	}
 
 	rotateLeft() {
@@ -52,6 +59,7 @@ export default class extends Phaser.GameObjects.Sprite {
 	}
 
 	dragCancel() {
+		this.visible = true; // in case we're out of screen
 		const scene = this.scene;
 		scene.tweens.add({
 			targets: [ this ],

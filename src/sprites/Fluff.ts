@@ -102,8 +102,14 @@ export class Fluff extends MapSprite {
 	}
 
 	dragMove(pointer : Point) {
-		this.x = pointer.x;
-		this.y = pointer.y;
+		if (pointer.x < 0) {
+			this.visible = false;
+		}
+		else {
+			this.visible = true; 
+			this.x = pointer.x;
+			this.y = pointer.y;	
+		}
 	}
 
 	dragRelease(pointer: Point) {
