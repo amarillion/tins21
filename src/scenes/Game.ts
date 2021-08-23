@@ -117,7 +117,6 @@ export class Game extends Phaser.Scene {
 	solution: Node[];
 	progressbar: ProgressBar;
 	control: Phaser.GameObjects.Ellipse;
-	nextTile: Tile;
 	draggableTile: DraggableTile;
 	uiBlocked: boolean;
 	tesselation: TesselationType;
@@ -360,17 +359,12 @@ export class Game extends Phaser.Scene {
 	}
 
 	updateNextTile() {
-		this.nextTile = pickOne(this.noDeadEnds);
-
-		if (this.draggableTile) {
-			this.draggableTile.destroy();
-		}
-
+		const nextTile = pickOne(this.noDeadEnds);
 		this.draggableTile = new DraggableTile({
 			scene: this, 
 			x: SCREENW - (CONTROL_SIZE / 2),
 			y: (CONTROL_SIZE / 2),
-			tile: this.nextTile
+			tile: nextTile
 		});
 		this.uiLayer.add(this.draggableTile);
 	}

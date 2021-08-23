@@ -2,7 +2,10 @@ import Phaser from 'phaser';
 import { Tile } from '../tiles';
 import { Game } from '../scenes/Game';
 import { Point } from '../util/geometry';
-import { getRotationUnits, rotateMaskLeft } from '../tileUtil';
+import { getRotationUnits, rotateMaskLeft, rotateMaskRight } from '../tileUtil';
+import { Node } from '../grid';
+
+const TWO_PI = Math.PI * 2;
 
 export interface Draggable {
 	dragRelease: ( pointer: Point ) => void,
@@ -17,12 +20,14 @@ export default class extends Phaser.GameObjects.Sprite {
 	scene: Game;
 	grabPoint: Point;
 	target: Point;
+	tile: Tile;
 
 	debugGraphics: Phaser.GameObjects.Graphics;
 
 	constructor ({ scene, x, y, tile } : { scene: Game, x: number, y : number, tile: Tile }) {
 		super(scene, x, y, tile.resKey);
 		this.grabPoint = null;
+		this.tile = tile;
 	}
 
 	preUpdate(/*time, delta*/) {
@@ -49,13 +54,13 @@ export default class extends Phaser.GameObjects.Sprite {
 	}
 
 	rotateLeft() {
-		const sides = this.scene.tesselation.sides;
-		this.rotation -= (Math.PI * 2 / sides);
+		const rotationSteps = this.scene.tesselation.rotationSteps;
+		this.rotation -= (TWO_PI / rotationSteps);
 	}
 
 	rotateRight() {
-		const sides = this.scene.tesselation.sides;
-		this.rotation += (Math.PI * 2 / sides);
+		const rotationSteps = this.scene.tesselation.rotationSteps;
+		this.rotation += (TWO_PI / rotationSteps);
 	}
 
 	dragCancel() {
@@ -67,6 +72,96 @@ export default class extends Phaser.GameObjects.Sprite {
 			x: scene.control.x,
 			y: scene.control.y
 		});
+	}
+
+	/**
+	 * Rotate, while at the same time substituting the contents of the tile,
+	 * so that the rotation appears invisible.
+	 * @param sign negative: left rotation. Positive: right rotation
+	 */
+	rotateContents(sign : -1 | 1) {
+		const scene = this.scene;
+		const symmetryAngle = TWO_PI / this.scene.tesselation.symmetry;
+		let connectionMask = this.tile.connectionMask;
+		const sides = this.scene.tesselation.sides;
+		const symmetryUnit = Math.round(sides / this.scene.tesselation.symmetry);
+		
+		let currentRotation = this.rotation;
+		// const before = currentRotation;
+		
+		if (sign === -1) {
+			connectionMask = rotateMaskLeft(connectionMask, symmetryUnit, sides);
+			currentRotation -= symmetryAngle;
+		}
+		else {
+			connectionMask = rotateMaskRight(connectionMask, symmetryUnit, sides);
+			currentRotation += symmetryAngle;
+		}
+		// console.log('reducing angle', angle(before), '->', angle(currentRotation), angleUnit);
+		
+		// replace tile and texture
+		this.rotation = currentRotation;
+		this.tile = scene.tileSet[connectionMask];
+		this.setTexture(this.tile.resKey);
+	}
+
+	dropTile(node : Node) {
+		const angle = x => Math.round(x * 360 / (TWO_PI));
+
+		const scene = this.scene;
+		
+		// round rotation to nearest unit angle...
+		const sides = this.scene.tesselation.sides;
+		const symmetryAngle = TWO_PI / this.scene.tesselation.symmetry;
+
+		let targetRotation = node.element.rotation;
+		
+		// first bring rotation of tile as close as possible to 0
+		// TODO: utility function. Phaser has WrapRotation / MathWrap
+		while (targetRotation - this.rotation > Math.PI) {
+			targetRotation -= TWO_PI;
+		}
+		while (targetRotation - this.rotation <= -Math.PI) {
+			targetRotation += TWO_PI;
+		}
+
+		// console.log('before', {
+		// 	sides,
+		// 	rotation: angle(this.rotation),
+		// 	elementRotation: angle(node.element.rotation),
+		// 	targetRotation: angle(targetRotation),
+		// 	symmetryAngle: angle(symmetryAngle),
+		// });
+		
+		// converting to angle to round off, and avoid float equality problems
+		// where the angle should be 0 but in reality it's 1e-16.
+		while (angle(this.rotation + symmetryAngle) < angle(targetRotation)) {
+			// console.log('rotate left');
+			this.rotateContents(+1);
+		}
+
+		while (angle(this.rotation - symmetryAngle) >= angle(targetRotation)) {
+			// console.log('rotate right');
+			this.rotateContents(-1);
+		}
+
+		// console.log('after', {
+		// 	sides,
+		// 	rotation: angle(this.rotation)
+		// });
+		
+		scene.tweens.add({
+			targets: [ this ],
+			duration: 1000,
+			x: node.cx,
+			y: node.cy,
+			rotation: targetRotation,
+			onComplete: () => {
+				scene.setTile(node, this.tile);
+				this.destroy();
+			}
+		});
+
 	}
 
 	dragRelease(/* pointer */) {
@@ -81,13 +176,7 @@ export default class extends Phaser.GameObjects.Sprite {
 		const node = scene.findNodeAt(this.x, this.y);
 		const dragSuccess = (node && !node.tile);
 		if (dragSuccess) {
-			// round rotation to nearest unit angle...
-			const sides = this.scene.tesselation.sides; //TODO: depends on tesselation
-			const rotationStep = getRotationUnits(this.rotation, sides);
-			const connectionMask = rotateMaskLeft(scene.nextTile.connectionMask, rotationStep, sides);
-			
-			// find rotated tile...
-			scene.setTile(node, scene.tileSet[connectionMask]);
+			this.dropTile(node);
 			scene.updateNextTile();
 		}
 		else {

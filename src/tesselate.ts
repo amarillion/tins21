@@ -9,7 +9,13 @@ export type TesselationType = {
 	name: string;
 	unitSize: [number, number];
 	links: Array<Array<{ dx: number, dy: number, idx: number }>>
-	sides: number;
+	sides: number,
+	
+	/** Rotational symmetry: how many fold symmetry does our shape have */
+	symmetry: number
+
+	/** how many times should you press L or R to go a full circle? */
+	rotationSteps: number
 };
 
 function getTriangleTesselation() : TesselationType  {
@@ -50,6 +56,8 @@ function getTriangleTesselation() : TesselationType  {
 		links,
 		name: 'TRIANGULAR',
 		sides: 3,
+		symmetry: 3,
+		rotationSteps: 6
 	};
 }
 
@@ -79,6 +87,8 @@ function getSquareTesselation() : TesselationType {
 		links,
 		name: 'SQUARE',
 		sides: 4,
+		symmetry: 4,
+		rotationSteps: 4
 	};
 }
 
@@ -122,6 +132,8 @@ function getHexagonalTesselation() : TesselationType  {
 		links,
 		name: 'HEXAGONAL',
 		sides: 6,
+		symmetry: 6,
+		rotationSteps: 6
 	};
 }
 
@@ -181,6 +193,8 @@ function getDiamondTesselation() : TesselationType {
 		links,
 		name: 'DIAMOND',
 		sides: 4,
+		symmetry: 2,
+		rotationSteps: 6
 	};
 }
 
@@ -266,6 +280,8 @@ function getCairoTesselation(): TesselationType  {
 		links,
 		name: 'CAIRO',
 		sides: 5,
+		symmetry: 1,
+		rotationSteps: 5
 	};
 }
 
