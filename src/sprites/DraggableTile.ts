@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { Tile } from '../tiles';
 import { Game } from '../scenes/Game';
-import { Point } from '../util/geometry';
+import { Point, wrapRotation } from '../util/geometry';
 import { getRotationUnits, rotateMaskLeft, rotateMaskRight } from '../tileUtil';
 import { Node } from '../grid';
+import { assert } from '@amarillion/helixgraph/lib/assert';
 
 const TWO_PI = Math.PI * 2;
 
@@ -28,6 +29,7 @@ export default class extends Phaser.GameObjects.Sprite {
 		super(scene, x, y, tile.resKey);
 		this.grabPoint = null;
 		this.tile = tile;
+		this.rotationBlocked = false;
 	}
 
 	preUpdate(/*time, delta*/) {
@@ -54,13 +56,29 @@ export default class extends Phaser.GameObjects.Sprite {
 	}
 
 	rotateLeft() {
+		if (this.rotationBlocked) return;
 		const rotationSteps = this.scene.tesselation.rotationSteps;
-		this.rotation -= (TWO_PI / rotationSteps);
+		const targetRotation = this.rotation - (TWO_PI / rotationSteps);
+		this.scene.tweens.add({
+			targets:[this],
+			duration: 100,
+			rotation: targetRotation,
+			onComplete: () => this.rotationBlocked = false
+		});
 	}
 
+	rotationBlocked: boolean;
+
 	rotateRight() {
+		if (this.rotationBlocked) return;
 		const rotationSteps = this.scene.tesselation.rotationSteps;
-		this.rotation += (TWO_PI / rotationSteps);
+		const targetRotation = this.rotation + (TWO_PI / rotationSteps);
+		this.scene.tweens.add({
+			targets:[this],
+			duration: 100,
+			rotation: targetRotation,
+			onComplete: () => this.rotationBlocked = false
+		});
 	}
 
 	dragCancel() {
@@ -70,7 +88,7 @@ export default class extends Phaser.GameObjects.Sprite {
 			targets: [ this ],
 			duration: 200,
 			x: scene.control.x,
-			y: scene.control.y
+			y: scene.control.y,
 		});
 	}
 
@@ -111,48 +129,41 @@ export default class extends Phaser.GameObjects.Sprite {
 		const scene = this.scene;
 		
 		// round rotation to nearest unit angle...
-		const sides = this.scene.tesselation.sides;
 		const symmetryAngle = TWO_PI / this.scene.tesselation.symmetry;
 
-		let targetRotation = node.element.rotation;
+		const targetRotation = wrapRotation(node.element.rotation);
+		const before = this.rotation;
 		
-		// first bring rotation of tile as close as possible to 0
-		// TODO: utility function. Phaser has WrapRotation / MathWrap
-		while (targetRotation - this.rotation > Math.PI) {
-			targetRotation -= TWO_PI;
-		}
-		while (targetRotation - this.rotation <= -Math.PI) {
-			targetRotation += TWO_PI;
-		}
-
-		// console.log('before', {
-		// 	sides,
-		// 	rotation: angle(this.rotation),
-		// 	elementRotation: angle(node.element.rotation),
-		// 	targetRotation: angle(targetRotation),
-		// 	symmetryAngle: angle(symmetryAngle),
-		// });
+		const deltaRotation = () => wrapRotation(targetRotation - this.rotation); 
 		
 		// converting to angle to round off, and avoid float equality problems
 		// where the angle should be 0 but in reality it's 1e-16.
-		while (angle(this.rotation + symmetryAngle) < angle(targetRotation)) {
-			// console.log('rotate left');
+		let it = 0;
+		while (angle(deltaRotation()) > angle(symmetryAngle / 2)) {
+			console.log('rotate left', angle(deltaRotation()), angle(symmetryAngle / 2));
 			this.rotateContents(+1);
+			assert(it++ < 6);
 		}
 
-		while (angle(this.rotation - symmetryAngle) >= angle(targetRotation)) {
-			// console.log('rotate right');
+		it = 0;
+		while (angle(deltaRotation()) < angle(-symmetryAngle / 2)) {
+			console.log('rotate right', angle(deltaRotation()), angle(-symmetryAngle / 2));
 			this.rotateContents(-1);
+			//TODO: this can get in an infinite loop if elementRotation is +180 and targetRotation = -180
+			assert(it++ < 6);
 		}
 
-		// console.log('after', {
-		// 	sides,
-		// 	rotation: angle(this.rotation)
-		// });
+		console.log('before', {
+			before: angle(before),
+			after: angle(this.rotation),
+			elementRotation: angle(node.element.rotation),
+			targetRotation: angle(targetRotation),
+			symmetryAngle: angle(symmetryAngle),
+		});
 		
 		scene.tweens.add({
 			targets: [ this ],
-			duration: 1000,
+			duration: 300,
 			x: node.cx,
 			y: node.cy,
 			rotation: targetRotation,

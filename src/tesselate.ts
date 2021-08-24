@@ -281,7 +281,7 @@ function getCairoTesselation(): TesselationType  {
 		name: 'CAIRO',
 		sides: 5,
 		symmetry: 1,
-		rotationSteps: 5
+		rotationSteps: 4
 	};
 }
 
