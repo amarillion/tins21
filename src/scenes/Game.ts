@@ -8,7 +8,8 @@ import { breadthFirstSearch } from '@amarillion/helixgraph';
 import { Fluff } from '../sprites/Fluff';
 import { Banana } from '../sprites/Banana';
 import { TESSELATIONS, TesselationType } from '../tesselate';
-import { TILES, initTiles, Tile } from '../tiles';
+import { TILES, Tile } from '../tiles';
+import { drawTiles } from '../drawTiles';
 import { MAX_SCORE, SCALE, SCREENH, SCREENW } from '../constants.js';
 import { ProgressBar } from '../sprites/progress-bar';
 import DraggableTile, { Draggable } from '../sprites/DraggableTile';
@@ -376,7 +377,7 @@ export class Game extends Phaser.Scene {
 		// make tile variants
 		this.level = 0;
 		this.uiBlocked = false;
-		initTiles(this);
+		drawTiles(this);
 
 		this.time.addEvent({ delay: 1000, callback: () => this.addMob(), loop: true });
 	

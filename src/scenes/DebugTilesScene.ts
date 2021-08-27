@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SCREENW } from '../constants';
-import { initTiles, TILES } from '../tiles';
+import { drawTiles } from '../drawTiles';
+import { TILES } from '../tiles';
 
 export class DebugTilesScene extends Phaser.Scene {
 
@@ -48,7 +49,7 @@ export class DebugTilesScene extends Phaser.Scene {
 	}
 	
 	create () {
-		initTiles(this);
+		drawTiles(this);
 		this.debugTilesPreview();
 	}
 

@@ -1,12 +1,8 @@
-import Phaser from 'phaser';
+import { TESSELATIONS } from './tesselate';
+import { Point } from './util/geometry';
 
-import { TESSELATIONS, TesselationType } from './tesselate';
-import { transform, translate, scale, applyToPoints, rotate, applyToPoint } from 'transformation-matrix';
-import { SCALE } from './constants.js';
-import { centerOfMass, Point } from './util/geometry';
-
-export type Tile = {
-	resKey: string,
+export class Tile {
+	resKey: string;
 	connectionMask: number;
 
 	/* position that equals 0,0 position of a unit in the grid */
@@ -14,99 +10,66 @@ export type Tile = {
 
 	/* center of mass */
 	center: Point
+
+	constructor(connectionMask: number) {
+		this.connectionMask = connectionMask;
+		this.resKey = null;
+		this.origin = null;
+		this.center = null;
+	}
 }
 
-export const TILES : Record<string, Tile[]> = {};
-
-export function initTiles(scene) {
+function _initTiles() {
+	const result = {};
 	for (const tesselation of Object.values(TESSELATIONS)) {
-		TILES[tesselation.name] = [];
+		result[tesselation.name] = [];
 		for (let i = 0; i < Math.pow(2, tesselation.sides); ++i) {
-			createTile(scene, tesselation, i);
+			result[tesselation.name][i] = new Tile(i);
 		}
 	}
+	return result;
 }
 
-function boundingBox(points : Point[]) {
-	return {
-		top : Math.min(...points.map(p => p.y)),
-		left : Math.min(...points.map(p => p.x)),
-		bottom : Math.max(...points.map(p => p.y)),
-		right : Math.max(...points.map(p => p.x)),
-	};
-}
+export const TILES : Record<string, Tile[]> = _initTiles();
 
-function createTile(scene, tesselation, connectionMask) {
-	const resKey = `tile-${tesselation.name}-${connectionMask}`;
-	const graphics = scene.make.graphics({ x: 0, y: 0, add: false });
-
-	const { points } = tesselation;
-	const cc = centerOfMass(points);
-
-	const MARGIN = 8;
-	const bbox = boundingBox(points);
-	const ox = (-bbox.left * SCALE) + MARGIN;
-	const oy = (-bbox.top * SCALE) + MARGIN;
-
-	const w = (bbox.right - bbox.left) * SCALE + 2 * MARGIN;
-	const h = (bbox.bottom - bbox.top) * SCALE + 2 * MARGIN;
-	renderTile(graphics, ox, oy, tesselation, connectionMask, 0x44aa44, 0x338833, 0xCCCC88);
-	graphics.generateTexture(resKey, w, h);
+export function rotateMaskLeft(input: number, shift: number, maskWidth : number) {
 	
+	const overflow = 1 << maskWidth;
+	// assert(input >= 0 && input < overflow);
 
-	TILES[tesselation.name][connectionMask] = {
-		resKey,
-		connectionMask,
-		origin: { 
-			x: ox, y: oy
-		},
-		center: {
-			x: ox + (cc.x * SCALE), y: oy + (cc.y * SCALE)
+	let result = input;
+	for (let i = 0; i < shift; ++i) {
+		// implement a roll
+		result <<= 1;
+		if ((result & overflow) > 0) {
+			result -= (overflow - 1);
 		}
-	};
-}
-
-function renderTile(graphics, ox, oy, tesselation : TesselationType, connectionMask, fillColor, outlineColor, pathColor) {
-	const { points, links, primitiveUnit, unitSize } = tesselation;
-	const cc = centerOfMass(points);
-	
-	const srcMatrix = transform(
-		translate(ox, oy),
-		scale(SCALE, SCALE),
-	);
-
-	const tPoints = applyToPoints(srcMatrix, points); 
-	const polygon = new Phaser.Geom.Polygon(tPoints);
-
-	graphics.fillStyle(fillColor);
-	graphics.fillPoints(polygon.points, true);
-
-	// draw paths
-	const primary = links[0];
-	let connectionBit = 1;
-	for (const { dx, dy, idx } of primary) {
-		if ((connectionMask & connectionBit) === 0) {
-			connectionBit *= 2;
-			continue;
-		}
-		connectionBit *= 2;
-
-		graphics.lineStyle(8.0, pathColor);
-		const destUnit = primitiveUnit[idx];
-		const xx = dx * unitSize[0] + destUnit.x;
-		const yy = dy * unitSize[1] + destUnit.y;
-
-		const destMatrix = transform(
-			translate(ox, oy),
-			scale(SCALE, SCALE),
-			translate(xx, yy),
-			rotate(destUnit.rotation)
-		);
-		const src = applyToPoint(srcMatrix, cc);
-		const target = applyToPoint(destMatrix, cc);	
-		graphics.lineBetween(src.x, src.y, (target.x + src.x) / 2, (target.y + src.y) / 2);
 	}
 
-	graphics.lineStyle(3.0, outlineColor);
-	graphics.strokePoints(polygon.points, true);
+	return result;
+}
+
+export function rotateMaskRight(input: number, shift: number, maskWidth : number) {
+	const overflow = 1 << maskWidth;
+	// assert(input >= 0 && input < overflow);
+
+	let result = input;
+	for (let i = 0; i < shift; ++i) {
+		// implement a roll
+		if ((result & 1) > 0) {
+			result += (overflow - 1);
+		}
+		result >>= 1;
+	}
+
+	return result;
+}
+
+export function getRotationUnits(rotation: number, sides: number) {
+	let normalized = rotation;
+	const PI_2 = Math.PI * 2;
+	const unit = PI_2 / sides;
+	while(normalized < 0) { normalized += PI_2; }
+	const result = Math.round(normalized / unit) % sides;
+	return result;
 }
