@@ -271,7 +271,7 @@ export class Game extends Phaser.Scene {
 		
 		
 		
-		this.spawnFluff();
+		// this.spawnFluff();
 	}
 
 	spawnFluff() {
